@@ -1,16 +1,13 @@
-# Bug Fix Prompt
+# Bugfix – diagnose og plan
 
-```text
-Read .ai/00-ROUTER.md, the active task and documentation for the affected flow.
+Analysér fejlen uden at implementere en rettelse.
 
-Reproduce or establish the failure from evidence before editing.
-Trace the flow end to end: trigger, input, validation, decision, state, side effect, persistence and output.
-Identify the root cause and explain why it produces the symptom.
-Check whether the same cause affects other consumers.
+1. Reproducer eller afgræns fejlen med konkrete observationer.
+2. Inspicér relevante logs, tests, kode, kontrakter og konfiguration.
+3. Adskil symptom, sandsynlig årsag og bekræftet rodårsag.
+4. Opret/opdatér en task fra `TASK-TEMPLATE.md` med minimal rettelse, regressionstest og risici.
+5. Sæt tasken til `Ready`, når rodårsag og plan er tilstrækkeligt bekræftet.
+6. Stop før kodeændringer og bed om godkendelse efter samme regel som `/start-task`.
 
-Implement the narrowest complete root-cause fix.
-Add or update a regression test that fails before the fix and passes after it where practical.
-Do not hide errors, weaken validation or special-case only the visible example.
+Hvis fejlen ikke kan reproduceres, dokumentér de manglende beviser og næste diagnostiske skridt; gæt ikke.
 
-Run relevant tests and quality gates. Record exact commands, results and remaining uncertainty in the task.
-```

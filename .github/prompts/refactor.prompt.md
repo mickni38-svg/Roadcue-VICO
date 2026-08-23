@@ -1,5 +1,11 @@
-# Refactor Roadcue code
+---
+description: Analysér og planlæg en afgrænset Roadcue-refaktorering
+agent: agent
+---
 
-Follow the complete [REFACTOR workflow](../../.ai/prompts/REFACTOR.md).
+Læs og følg `.ai/prompts/REFACTOR.md` præcist.
 
-Read the component responsibilities, relevant ADRs, active task and tests. State which behavior must remain unchanged. Do not combine the refactor with unrelated feature work or introduce a competing source of truth.
+Refaktorering:
+
+${input:request:Beskriv mål og berørte filer}
+

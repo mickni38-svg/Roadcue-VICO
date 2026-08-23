@@ -1,18 +1,28 @@
-# Start Task Prompt
+# Start task – analyse og plan
 
-```text
-Read the repository assistant instructions, then .ai/00-ROUTER.md and the active task file.
+Formålet er at skabe en pålidelig implementeringsplan. Denne prompt må ikke ændre produktionskode, tests, konfiguration, migrations eller dokumentation uden for taskfilen.
 
-Before editing:
-1. Restate the requested observable outcome and scope.
-2. Inspect the relevant implementation, tests, configuration and contracts.
-3. Update the task's evidence, impact analysis, plan and validation plan.
-4. Separate verified facts, inferences and unknowns.
-5. Stop and ask a focused question if an unknown could materially change the solution.
+## Input
 
-Then implement the smallest complete change that meets the acceptance criteria.
-Follow existing repository conventions unless the task explicitly changes them.
-Run the relevant quality gates discovered in PROJECT-CONTEXT.md or the repository.
-Update the task with changed files, exact validation results, deviations and residual risks.
-Do not claim completion for checks that were not run.
-```
+Brugeren skal angive en use-case-sti eller beskrive opgaven præcist. Hvis en fil er åben eller vedhæftet, må den bruges som input, men dens sti skal registreres.
+
+## Fremgangsmåde
+
+1. Læs `.ai/00-ROUTER.md` og `.ai/01-CONTRACT.md`.
+2. Læs den angivne use case direkte. Brug kun indekset, hvis stien/ID'et ikke er kendt.
+3. Læs kun relevante arkitektur- og domænefiler.
+4. Læs problemformuleringen kun under betingelserne i routeren.
+5. Inspicér den eksisterende kode, tests, kontrakter og konfiguration, som use casen forventes at berøre.
+6. Søg efter en eksisterende aktiv task for samme arbejde. Opdatér den i stedet for at oprette en dublet.
+7. Opret eller opdatér tasken fra `.ai/tasks/TASK-TEMPLATE.md`.
+8. Dokumentér verificeret udgangspunkt, scope, påvirkning, plan, acceptkriterier, validering, risici og spørgsmål.
+9. Sæt status til `Ready`, når planen er komplet; ellers `Draft` eller `Blocked`.
+
+## Obligatorisk stop
+
+Stop efter taskfilen og et kort resumé. Skriv udtrykkeligt:
+
+> Planen er klar til godkendelse. Der er ikke implementeret kode. Kør `/continue`, når planen er godkendt.
+
+Du må ikke begynde at implementere i samme kørsel, selv om løsningen virker enkel.
+

@@ -1,11 +1,11 @@
-# Fix a Roadcue defect
+---
+description: Diagnostisér en Roadcue-fejl og lav en rettelsesplan
+agent: agent
+---
 
-Follow the complete [BUGFIX workflow](../../.ai/prompts/BUGFIX.md).
+Læs og følg `.ai/prompts/BUGFIX.md` præcist.
 
-Read:
+Fejlbeskrivelse:
 
-- [Context router](../../.ai/00-ROUTER.md)
-- [Project contract](../../.ai/01-CONTRACT.md)
-- The active task file
+${input:request:Beskriv fejlen, reproduktion og relevante filer}
 
-Reproduce or establish the defect from evidence. Trace the complete input, validation, decision, state, side-effect, persistence and output flow before editing. Fix the root cause and add a regression test where practical.

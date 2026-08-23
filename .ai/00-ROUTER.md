@@ -1,45 +1,43 @@
-# Context Router
+# Roadcue context router
 
-This is the first workflow file an AI assistant reads. GitHub Copilot enters through `.github/copilot-instructions.md`, which routes the current request here. The purpose is to load enough context without loading the entire documentation set.
+Brug denne fil til at vælge mindst mulig nødvendig kontekst. Læs ikke hele `.ai/` automatisk.
 
-## Always read
+## Altid
 
-1. `.ai/01-CONTRACT.md`
-2. `.ai/PROJECT-CONTEXT.md`
-3. the active task file in `.ai/tasks/`
-4. repository-level assistant instructions, if present
+1. Læs `.ai/01-CONTRACT.md`.
+2. Identificér opgavetypen fra brugerens kommando.
+3. Følg den relevante prompt i `.ai/prompts/`.
+4. Inspicér den aktuelle kode, før du antager, at dokumentationen matcher repositoryet.
 
-## Then read by task type
+## Opgaveruter
 
-| Task | Required context |
+| Opgave | Læs |
 |---|---|
-| New feature | relevant feature specification, architecture flow, domain rules, task template |
-| Bug fix | affected flow, state contract, tests, `prompts/BUGFIX.md` |
-| API or integration | solution architecture, runtime flow, persistence if relevant |
-| Data or persistence | persistence, state contract, compatibility requirements |
-| UI, output or notification | output contract, runtime flow, accessibility requirements |
-| AI behavior | AI boundary, AI contract, structured output schema, failure policy |
-| Refactor | component responsibilities, code inventory, relevant ADRs |
-| Review | contract, task, affected specifications, `prompts/REVIEW.md` |
-| Continue work | task status, current diff, validation results, `prompts/CONTINUE.md` |
+| Ny use case eller ændring af use case | `features/README.md`, `features/USE-CASE-TEMPLATE.md` og kun relevante katalogfiler |
+| Implementér en kendt use case | Den angivne use case, relevante arkitekturfiler, relevante domæneregler og den aktive task |
+| Fortsæt en godkendt task | Kun aktiv task, linket use case, berørte regler og de faktiske kodefiler |
+| Bug | `prompts/BUGFIX.md`, berørt kode/test og kun relevante regler |
+| Refaktorering | `prompts/REFACTOR.md`, berørt kode/test og relevante arkitekturgrænser |
+| Review | `prompts/REVIEW.md`, ændringerne, tests og relevante regler |
+| Dokumentation | `prompts/DOCUMENT.md` og de kilder dokumentet beskriver |
+| Arkitekturændring | Relevante arkitekturfiler, accepterede ADR'er og `ADR-TEMPLATE.md` |
 
-## Read decisions selectively
+## Problemformulering og kravspecifikation
 
-Read an ADR when the task touches the decision it governs. Accepted ADRs are binding until superseded.
+`docs/Roadcue-Problemformulering-og-Kravspecifikation.md` læses kun når:
 
-## Before editing
+- en opgave er uklar eller ikke dækket af en godkendt use case;
+- scope, produktmål eller afgrænsning skal vurderes;
+- en ny use case eller større arkitekturændring foreslås.
 
-The assistant must be able to state:
+Den læses ikke rutinemæssigt ved implementering af en entydig, godkendt use case.
 
-- the requested outcome;
-- the evidence for current behavior;
-- the files and flows likely affected;
-- the relevant contracts and constraints;
-- the validation method;
-- any unresolved question that could materially change the solution.
+## Kontekstbudget
 
-If these cannot be stated, continue analysis or ask a focused question. Do not guess.
+- Når en præcis use-case-sti er angivet, må hele kataloget eller indekset ikke læses først.
+- Læs kun de arkitekturfiler og domæneregler, der påvirkes.
+- Læs ikke afsluttede tasks, medmindre den aktive task linker til dem.
+- Kopiér ikke hele use casen ind i tasken; link til den og dokumentér kun implementeringsdeltaet.
+- Brug korte testsammendrag i tasken, ikke komplette logs.
+- Udvid konteksten én fil ad gangen, når et konkret spørgsmål kræver det.
 
-## After editing
-
-Update the active task with changed files, validation, residual risks and follow-up work. Update architecture, feature, domain or decision documentation only when its durable truth changed.

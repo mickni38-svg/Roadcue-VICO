@@ -1,5 +1,11 @@
-# Continue a Roadcue task
+---
+description: Implementér og test en udtrykkeligt godkendt Roadcue-task
+agent: agent
+---
 
-Follow the complete [CONTINUE workflow](../../.ai/prompts/CONTINUE.md).
+Læs og følg `.ai/prompts/CONTINUE.md` præcist.
 
-Read the active task status, implementation record, validation results and current repository diff. Do not repeat completed work. Continue from the next incomplete safe step and preserve unrelated user changes.
+Godkendelse og tasksti:
+
+${input:request:Skriv at planen er godkendt og angiv taskstien}
+

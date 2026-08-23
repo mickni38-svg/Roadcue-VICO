@@ -2,7 +2,13 @@
 
 Dette er indgangen til de opsplittede use cases. Hver use case har én autoritativ Markdown-fil. Nummereringen og rækkefølgen følger det prioriterede Roadcue-katalog; UC-32 og UC-33 ligger derfor under deres relevante domæner.
 
-Fælles formål, afgrænsning, aktører, prioriteret roadmap og faser findes i [01-CATALOG-CONTEXT.md](01-CATALOG-CONTEXT.md). Relationer, implementeringsrækkefølge og tværgående acceptkriterier findes i [02-RELATIONS-ROADMAP-AND-ACCEPTANCE.md](02-RELATIONS-ROADMAP-AND-ACCEPTANCE.md).
+Læs kun den ekstra katalogfil, opgaven kræver:
+
+- [01-PRODUCT-SCOPE-AND-ACTORS.md](01-PRODUCT-SCOPE-AND-ACTORS.md)
+- [02-PRIORITIZED-ROADMAP.md](02-PRIORITIZED-ROADMAP.md)
+- [03-USE-CASE-RELATIONS.md](03-USE-CASE-RELATIONS.md)
+- [04-IMPLEMENTATION-ORDER.md](04-IMPLEMENTATION-ORDER.md)
+- [05-CROSS-CUTTING-ACCEPTANCE.md](05-CROSS-CUTTING-ACCEPTANCE.md)
 
 ## A. Samtale og AI-orkestrering
 

@@ -1,63 +1,48 @@
-# Project Contract
+# Bindende arbejdskontrakt
 
-This file contains stable rules for AI-assisted development. Replace bracketed placeholders during project adoption.
+Disse regler gælder for alle Copilot-opgaver i Roadcue.
 
-## Authority order
+## Sandhedskilder
 
-When sources disagree, use this order unless the project explicitly defines another:
+Prioritér modstridende information sådan:
 
-1. the user's current, explicit instruction;
-2. approved security, legal and safety constraints;
-3. the active task and accepted feature specification;
-4. accepted ADRs and domain contracts;
-5. executable tests and externally published interfaces;
-6. current implementation;
-7. comments, generated documentation and examples.
+1. Brugerens aktuelle instruktion.
+2. Godkendt use case og aktiv task.
+3. Accepterede ADR'er.
+4. Arkitektur- og domæneregler.
+5. Den eksisterende kode og tests som bevis for nuværende tilstand.
 
-Do not resolve a material conflict silently. Record it and ask for a decision when authority is unclear.
+Hvis dokumentation og kode er uenige, må uenigheden ikke skjules. Registrér den i tasken og foreslå den mindste korrektion.
 
-## Scope rules
+## To faser
 
-- Implement the smallest complete change that satisfies the acceptance criteria.
-- Do not add adjacent features merely because they seem useful.
-- Do not create parallel models, services, state or decision paths without documented justification.
-- Preserve public behavior unless the task explicitly changes it.
-- Preserve user changes unrelated to the task.
-- Prefer reversible, local changes over broad rewrites.
+- `/start-task`, `/bugfix` og `/refactor` analyserer, opretter/opdaterer en task og stopper før kodeændringer.
+- Implementering må først begynde efter tydelig brugergodkendelse og `/continue`.
+- `/continue` må kun implementere den godkendte plan. Nyt scope kræver ny godkendelse.
 
-## Evidence rules
+## Ændringsdisciplin
 
-- Inspect the repository before proposing file-level changes.
-- Distinguish verified facts, reasonable inferences and unknowns.
-- Trace behavior end to end: input, validation, decision, side effect, persistence and output.
-- Fix root causes, not only visible symptoms.
-- Never claim validation that was not run.
+- Lav den mindste komplette ændring, som opfylder use casen.
+- Bevar eksisterende brugerændringer og undgå uvedkommende oprydning.
+- Opfind ikke endpoints, tabeller, DTO'er, filstier eller kontrakter; verificér dem i koden.
+- Tilføj ikke fremtidige features som forberedelse uden et aktuelt krav.
+- En ændring er ikke færdig, før relevante tests eller konkrete manuelle kontroller er udført.
 
-## Quality rules
+## Roadcue-grænser
 
-- Business decisions have one authoritative source.
-- Consumers display or transport authoritative results; they do not independently recompute them.
-- Validate data at trust boundaries.
-- Enforce authentication, authorization and hard constraints in deterministic code.
-- Handle errors explicitly and avoid silent data loss.
-- Add or update tests for changed behavior where practical.
-- Add observability for important failures and state transitions.
+- C# ejer SQL, autorisation, forretningsregler, geoqueries og præcise beregninger.
+- Python/LangChain/LangGraph ejer samtale, toolvalg og agentorkestrering gennem godkendte API'er.
+- LLM'en må ikke tilgå SQL direkte, omgå C# eller opfinde aktuelle Roadcue-data.
+- Eksterne udbydere skjules bag Roadcue-ejede C#-interfaces.
+- VICO rådgiver og styrer aldrig køretøjet.
 
-## Security and privacy
+## Stopbetingelser
 
-- Never commit secrets, tokens, credentials or private production data.
-- Use least privilege and minimize collection and exposure of data.
-- Treat external input, model output and retrieved content as untrusted.
-- Do not weaken security controls to make a test pass.
+Stop og bed om afklaring, hvis:
 
-## Project-specific non-negotiables
+- acceptkriterierne er indbyrdes modstridende;
+- en sikkerheds-, privatlivs- eller autorisationsbeslutning mangler;
+- planen kræver større arkitekturændringer uden accepteret ADR;
+- den angivne use case eller task ikke findes;
+- implementering kræver scope uden for den godkendte plan.
 
-- Primary stack: Angular mobile web/PWA, .NET/C#, EF Core, SQL Server, Python/FastAPI, LangChain and LangGraph.
-- Architecture boundary: Python accesses Roadcue only through approved C# APIs; C# owns SQL, authorization, business rules, geoqueries and precise calculations.
-- AI boundary: the LLM may converse, interpret and orchestrate approved tools but may not invent Roadcue data, execute SQL, bypass authorization or perform authoritative geo/time/traffic/parking calculations.
-- Provider boundary: external place, traffic, weather and routing providers are wrapped behind Roadcue-owned C# interfaces.
-- Current POC: text-based, reactive and testable with controlled simulated driver/GPS context.
-- Identity transition: name-based driver lookup is POC-only; MVP receives an authorized `driverId` from login/token context.
-- Required quality gates: C# build/tests, Python tests, contract tests for tool/API schemas and fixed VICO routing/prompt scenarios as those suites are introduced.
-- Prohibited changes: full navigation/routing engine, fleet/ERP/tachograph scope, vehicle control, direct CAN-bus POC integration, direct LLM database access, premature Kubernetes/microservices and proactive POC interruptions.
-- Privacy: location, movement, relations and messages require purpose-limited authorization, consent and explicit retention decisions.

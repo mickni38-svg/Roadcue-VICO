@@ -1,15 +1,21 @@
-# Tasks
+# Implementeringstasks
 
-Each non-trivial change gets one active task file. The task is the working agreement between the user and the assistant.
+En task dokumenterer ét konkret implementeringsdelta. Den erstatter ikke den linkede use case.
 
-Use `YYYY-MM-DD-short-name.md`. Keep decisions and evidence in the task so another session can continue without reconstructing history.
+## Status
 
-Task status:
+- `Draft`: analysen er ikke færdig.
+- `Ready`: planen er klar til brugerens godkendelse.
+- `In Progress`: brugeren har godkendt planen, og implementering er startet.
+- `Blocked`: et konkret forhold forhindrer fortsættelse.
+- `Done`: acceptkriterier og validering er opfyldt.
 
-- `Draft`: outcome is known, analysis incomplete.
-- `Ready`: scope, plan and acceptance criteria are sufficient.
-- `In progress`: implementation is underway.
-- `Blocked`: a decision, permission or dependency is missing.
-- `Done`: acceptance criteria and required validation are complete.
+## Regler
 
-Do not mark a task done when required validation failed or was skipped. Record the exact result.
+- Brug filnavnet `TASK-YYYY-MM-DD-KORT-TITEL.md`.
+- Hav højst én aktiv task for det samme implementeringsarbejde.
+- Link til use casen i stedet for at kopiere den.
+- `/start-task` må højst sætte status til `Ready`.
+- Kun `/continue` efter udtrykkelig godkendelse må sætte `In Progress`.
+- Flyt færdige tasks til `tasks/archive/`, når mappen oprettes. Læs dem ikke rutinemæssigt.
+

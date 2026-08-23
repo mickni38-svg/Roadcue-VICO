@@ -1,20 +1,21 @@
-/start-task
+Nej, du skal ikke åbne start-task.prompt.md som aktivt dokument.
 
-Analysér og planlæg implementeringen af UC-01 fra:
+Gør sådan i Visual Studio:
+
+Åbn Copilot Chat i Agent Mode.
+Skriv eller vælg:
+/start-task
+Indsæt use-case-stien i inputfeltet:
+Analysér og planlæg implementeringen af:
 
 .ai/features/conversation/UC-01-FOERE-EN-NATURLIG-AI-SAMTALE.md
--------------------------------------------------------
 
-## bagefter skriver jeg
-/continue
-Planen er godkendt.
-Implementér den aktive task.
-Kør alle relevante tests og valideringer.
-Opdatér task-filen med ændrede filer, testresultater og resterende risici.
+Undersøg eksisterende kode først, og planlæg kun det, der mangler.
 
--------------------------------------------------------------------------------
-## hvis den ikke er godkendt så skriv:
+Du kan eventuelt have UC-01-filen åben, men det er ikke nødvendigt, fordi du angiver den præcise sti.
 
-Ret planen, så eksisterende VICO-funktionalitet genbruges.
-Du må ikke oprette en ny agent.
-Stop igen efter den opdaterede plan.
+start-task.prompt.md er selve Copilot-kommandoen. Den skal ligge i:
+
+.github/prompts/start-task.prompt.md
+
+Copilot indlæser den, når du bruger /start-task. Du skal ikke åbne eller vedhæfte promptfilen manuelt.

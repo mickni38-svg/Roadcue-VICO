@@ -1,5 +1,11 @@
-# Review a Roadcue change
+---
+description: Udfør et read-only review af Roadcue-ændringer
+agent: agent
+---
 
-Follow the complete [REVIEW workflow](../../.ai/prompts/REVIEW.md) and [review process](../../.ai/workflows/03-REVIEW-WORKFLOW.md).
+Læs og følg `.ai/prompts/REVIEW.md` præcist.
 
-Read the active task, affected contracts and complete diff. Review without editing unless the user explicitly requests fixes. Report findings by severity with evidence, impact and concrete remediation.
+Ændringer eller task:
+
+${input:request:Angiv diff, branch, filer eller task}
+

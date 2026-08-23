@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/docs/">
+    <File Path=".ai/00-ROUTER.md" />
     <File Path="docs/Roadcue-Problemformulering-og-Kravspecifikation.md" />
     <File Path="docs/Roadcue-VICO-Usecase-Katalog.md" />
   </Folder>

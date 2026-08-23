@@ -1,24 +1,14 @@
 ---
-applyTo: "src/**/*.cs,src/**/*.csproj,src/**/*.json"
+applyTo: "src/**/*.cs,src/**/*.csproj,tests/**/*.cs"
 ---
 
 # Roadcue .NET instructions
 
-Read these files before changing C# code:
+- Følg `.ai/architecture/` og relevante regler i `.ai/domain/`.
+- Hold domæne- og applicationlogik ude af controllers.
+- C# håndhæver autorisation, samtykke, SQL-adgang, forretningsregler og præcise beregninger.
+- Eksterne providers skal bag Roadcue-ejede interfaces og mappes til egne kontrakter.
+- Brug async I/O og cancellation tokens, hvor den eksisterende kodebase understøtter det.
+- Test regler og fejlflows på det laveste relevante lag; tilføj integrationstest for API-kontrakter.
+- Opret kun EF Core-migrationer ved en godkendt datamodelændring.
 
-- `.ai/architecture/01-SOLUTION-ARCHITECTURE.md`
-- `.ai/architecture/03-COMPONENT-RESPONSIBILITIES.md`
-- `.ai/architecture/07-PERSISTENCE.md`
-
-.NET/C# owns Roadcue business logic, authentication and authorization, SQL access, EF Core, geoqueries, precise calculations and external-provider interfaces.
-
-Do not move those responsibilities into Python, prompts, Angular or the LLM. Expose small purpose-specific API contracts for approved VICO tools. Apply authorization before data crosses the C# API boundary.
-
-Follow the existing Roadcue solution layering:
-
-- `Roadcue.Api`: transport and composition.
-- `Roadcue.Application`: use cases and application orchestration.
-- `Roadcue.Domain`: domain behavior and invariants.
-- `Roadcue.Infrastructure`: EF Core, SQL Server and external adapters.
-
-Verify actual project conventions before choosing a layer or namespace. Do not create parallel DTOs, services or decision paths without evidence that the existing structure cannot own the responsibility.

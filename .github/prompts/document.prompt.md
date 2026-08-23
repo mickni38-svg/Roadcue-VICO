@@ -1,5 +1,11 @@
-# Update Roadcue documentation
+---
+description: Opdatér Roadcue-dokumentation fra verificerede kilder
+agent: agent
+---
 
-Follow the complete [DOCUMENT workflow](../../.ai/prompts/DOCUMENT.md).
+Læs og følg `.ai/prompts/DOCUMENT.md` præcist.
 
-Verify claims against the implementation, tests, configuration and accepted decisions. Keep working history in tasks, durable behavior in feature/domain documents, ownership in architecture and durable choices in ADRs.
+Dokumentationsopgave:
+
+${input:request:Angiv dokument og den adfærd der skal verificeres}
+

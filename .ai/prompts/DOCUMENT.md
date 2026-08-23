@@ -1,13 +1,10 @@
-# Documentation Prompt
+# Document – verificeret dokumentation
 
-```text
-Update documentation from verified repository behavior and accepted decisions.
+Dokumentér kun verificeret adfærd fra kode, tests, accepterede beslutninger og godkendte use cases.
 
-Read .ai/00-ROUTER.md and inspect the implementation, tests and configuration relevant to the document.
-Do not present planned or inferred behavior as implemented fact.
-Keep task history in tasks, durable behavior in features/domain, system ownership in architecture and durable choices in ADRs.
-Link to a single authoritative rule instead of duplicating it across documents.
-Remove stale claims when the implementation has changed.
+- Skeln mellem nuværende tilstand og planlagt retning.
+- Opfind ikke filstier, endpoints, kontrakter eller status.
+- Link til den autoritative fil i stedet for at kopiere lange afsnit.
+- Opdatér ikke produktionskode som del af en dokumentationsopgave.
+- Registrér uoverensstemmelser i stedet for at skjule dem.
 
-Summarize which facts were verified and list any unknowns that remain.
-```

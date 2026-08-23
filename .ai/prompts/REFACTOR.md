@@ -1,15 +1,12 @@
-# Refactor Prompt
+# Refactor – analyse og plan
 
-```text
-Read .ai/00-ROUTER.md, the active task, component responsibilities, relevant ADRs and tests.
+Planlæg refaktoreringen uden at ændre kode.
 
-State the exact maintainability problem and the behavior that must remain unchanged.
-Map callers, consumers, state ownership, public interfaces and compatibility constraints.
-Establish a baseline with tests or observable examples before editing.
+- Beskriv det målbare problem i den eksisterende struktur.
+- Bevar observerbar adfærd og offentlige kontrakter, medmindre andet er godkendt.
+- Kortlæg berørte tests og arkitekturgrænser.
+- Foreslå den mindste trinvise refaktorering med rollback-/valideringspunkter.
+- Opret/opdatér en task og stop før implementering.
 
-Make the smallest coherent structural change.
-Do not combine the refactor with unrelated feature changes.
-Do not create a second source of truth during migration; define the cutover and remove obsolete paths when safe.
+En refaktorering må ikke bruges til at snige nye features eller generel oprydning ind.
 
-Run behavior-preserving tests and relevant quality gates. Record intentional structural changes and any remaining migration work.
-```

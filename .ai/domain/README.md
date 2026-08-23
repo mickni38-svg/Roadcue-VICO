@@ -1,5 +1,11 @@
-# Domain Documentation
+# Domæneregler
 
-This directory contains rules that define correct product behavior independently of UI and infrastructure.
+Filerne her indeholder tværgående Roadcue-regler. De er ikke en kopi af use cases eller arkitektur.
 
-Document only rules that are real and agreed. Use examples and counterexamples. If terminology matters, add a glossary. Domain documents explain what must be true; architecture documents explain where and how responsibility is implemented.
+Læs kun en domænefil, når opgaven påvirker den beskrevne grænse.
+
+- `01-GLOBAL-BUSINESS-RULES.md`: regler som gælder alle funktioner.
+- `02-AI-TOOL-CONTRACT.md`: grænsen mellem VICO og C#.
+- `03-IDENTITY-LOCATION-AND-CONSENT.md`: identitet, position og samtykke.
+- `04-STATE-OWNERSHIP.md`: ejerskab af samtale- og forretningsstate.
+
