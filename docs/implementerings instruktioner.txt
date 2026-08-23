@@ -1,0 +1,20 @@
+/start-task
+
+Analysér og planlæg implementeringen af UC-01 fra:
+
+.ai/features/conversation/UC-01-FOERE-EN-NATURLIG-AI-SAMTALE.md
+-------------------------------------------------------
+
+## bagefter skriver jeg
+/continue
+Planen er godkendt.
+Implementér den aktive task.
+Kør alle relevante tests og valideringer.
+Opdatér task-filen med ændrede filer, testresultater og resterende risici.
+
+-------------------------------------------------------------------------------
+## hvis den ikke er godkendt så skriv:
+
+Ret planen, så eksisterende VICO-funktionalitet genbruges.
+Du må ikke oprette en ny agent.
+Stop igen efter den opdaterede plan.

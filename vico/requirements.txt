@@ -1,0 +1,6 @@
+fastapi[standard]
+httpx
+langchain
+langgraph
+pydantic-settings
+langchain-openai

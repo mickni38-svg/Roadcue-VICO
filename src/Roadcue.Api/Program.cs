@@ -1,0 +1,39 @@
+using Microsoft.EntityFrameworkCore;
+using Roadcue.Infrastructure.Persistence;
+using Scalar.AspNetCore;
+
+var builder = WebApplication.CreateBuilder( args );
+
+builder.Services.AddControllers();
+builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<RoadcueDbContext>( options =>
+{
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString( "Roadcue" ) );
+} );
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider
+        .GetRequiredService<RoadcueDbContext>();
+
+    await RoadcueSeed.SeedAsync( db );
+}
+
+app.Run();

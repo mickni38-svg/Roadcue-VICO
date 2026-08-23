@@ -1,0 +1,6 @@
+@Roadcue.Api_HostAddress = http://localhost:5041
+
+GET {{Roadcue.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

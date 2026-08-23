@@ -1,0 +1,31 @@
+<Solution>
+  <Folder Name="/docs/">
+    <File Path="docs/Roadcue-Problemformulering-og-Kravspecifikation.md" />
+    <File Path="docs/Roadcue-VICO-Usecase-Katalog.md" />
+  </Folder>
+  <Project Path="src/Roadcue.Api/Roadcue.Api.csproj" />
+  <Project Path="src/Roadcue.Application/Roadcue.Application.csproj" />
+  <Project Path="src/Roadcue.Domain/Roadcue.Domain.csproj" />
+  <Project Path="src/Roadcue.Infrastructure/Roadcue.Infrastructure.csproj" />
+  <Project Path="vico/" Type="Website" DisplayName="vico">
+    <BuildType Project="Debug" />
+    <Properties Name="WebsiteProperties">
+      <Property Name="Debug.AspNetCompiler.Debug" Value="&quot;True&quot;" />
+      <Property Name="Debug.AspNetCompiler.FixedNames" Value="&quot;false&quot;" />
+      <Property Name="Debug.AspNetCompiler.ForceOverwrite" Value="&quot;true&quot;" />
+      <Property Name="Debug.AspNetCompiler.PhysicalPath" Value="&quot;vico\&quot;" />
+      <Property Name="Debug.AspNetCompiler.TargetPath" Value="&quot;PrecompiledWeb\localhost_62725\&quot;" />
+      <Property Name="Debug.AspNetCompiler.Updateable" Value="&quot;true&quot;" />
+      <Property Name="Debug.AspNetCompiler.VirtualPath" Value="&quot;/localhost_62725&quot;" />
+      <Property Name="Release.AspNetCompiler.Debug" Value="&quot;False&quot;" />
+      <Property Name="Release.AspNetCompiler.FixedNames" Value="&quot;false&quot;" />
+      <Property Name="Release.AspNetCompiler.ForceOverwrite" Value="&quot;true&quot;" />
+      <Property Name="Release.AspNetCompiler.PhysicalPath" Value="&quot;vico\&quot;" />
+      <Property Name="Release.AspNetCompiler.TargetPath" Value="&quot;PrecompiledWeb\localhost_62725\&quot;" />
+      <Property Name="Release.AspNetCompiler.Updateable" Value="&quot;true&quot;" />
+      <Property Name="Release.AspNetCompiler.VirtualPath" Value="&quot;/localhost_62725&quot;" />
+      <Property Name="TargetFrameworkMoniker" Value="&quot;.NETFramework,Version%3Dv4.0&quot;" />
+      <Property Name="VWDPort" Value="&quot;62725&quot;" />
+    </Properties>
+  </Project>
+</Solution>
