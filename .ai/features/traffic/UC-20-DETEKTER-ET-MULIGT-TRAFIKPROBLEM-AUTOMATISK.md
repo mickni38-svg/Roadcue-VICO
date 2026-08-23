@@ -19,6 +19,16 @@
 - Hvis signalet ikke kan bekræftes, udløber kandidaten.
 - Brugere uden samtykke indgår ikke i datagrundlaget.
 
+## Acceptkriterier
+
+- [ ] Kun GPS- og hastighedsdata med gyldigt samtykke indgår i detektionsgrundlaget.
+- [ ] Detektion kræver et konfigureret minimum af relevante signaler og et målbart hastighedsfald.
+- [ ] Signaler grupperes efter geografisk område, retning og tidsvindue.
+- [ ] En detektion oprettes som hændelseskandidat og ikke som en bekræftet hændelse.
+- [ ] En kandidat kan sammenholdes med eksterne data uden at afsløre individuelle chaufførers rå spor.
+- [ ] Ubekræftede kandidater udløber efter en fastsat gyldighedsperiode.
+- [ ] Gentagne signaler for samme forhold opdaterer kandidaten frem for at skabe ukontrollerede dubletter.
+
 **Resultat**
 
 - Et muligt trafikproblem er registreret uden at blive præsenteret som et sikkert faktum.

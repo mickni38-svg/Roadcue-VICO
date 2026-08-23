@@ -18,6 +18,15 @@
 4. VICO læser det vigtigste op først.
 5. Chaufføren kan bede om detaljer, springe over eller stoppe.
 
+## Acceptkriterier
+
+- [ ] VICO forstår indholdsønsket uden nummererede talemenuer.
+- [ ] Kun indhold, som chaufføren er autoriseret til at se, kan oplæses.
+- [ ] Det vigtigste og mest tidskritiske indhold læses før detaljer.
+- [ ] Chaufføren kan bede om detaljer, springe over, gentage eller stoppe.
+- [ ] En opsummering ændrer ikke fakta, afsender, tidspunkt eller sikkerhedsstatus.
+- [ ] Manglende indhold formidles kort uden at opfinde menupunkter eller data.
+
 **Resultat**
 
 - Chaufføren har fået det relevante appindhold uden at kigge på skærmen.

@@ -22,6 +22,15 @@
 - Hvis ingen venner deler position, præsenteres kun stedresultatet.
 - Hvis community-oplysninger er ubekræftede, fremgår det eksplicit.
 
+## Acceptkriterier
+
+- [ ] VICO udleder og bevarer hvert selvstændigt krav i chaufførens samlede forespørgsel.
+- [ ] Sted-, facilitets-, venne- og eventuelle communityresultater kobles til samme stedskandidat.
+- [ ] Venner uden gyldig positionstilladelse indgår ikke i resultatet.
+- [ ] Manglende data fra én kilde forhindrer ikke et delvist svar fra de øvrige kilder.
+- [ ] Delvise matches og ubekræftede oplysninger markeres tydeligt.
+- [ ] VICO returnerer ét prioriteret og kort svar frem for separate rå toolresultater.
+
 **Resultat**
 
 - Chaufføren får et samlet forslag baseret på flere kontrollerede datakilder.

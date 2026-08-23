@@ -18,6 +18,15 @@
 - Hvis observationerne er modstridende, siger VICO det.
 - Hvis der ikke findes aktuelle observationer, tilbyder VICO senere UC-16.
 
+## Acceptkriterier
+
+- [ ] Kun observationer med relevant geografisk og tidsmæssig sammenhæng returneres.
+- [ ] Udløbne eller ugyldige observationer anvendes ikke som aktuelle oplysninger.
+- [ ] Semantisk søgning må ikke omgå deterministiske filtre for autorisation og geografi.
+- [ ] Svaret angiver kildeantal, alder og sikkerhedsstatus, når oplysningerne bruges.
+- [ ] Modstridende observationer formidles som uenighed.
+- [ ] Et tomt resultat formidles som manglende aktuelle communitydata og ikke som bevis for, at alt er normalt.
+
 **Resultat**
 
 - Chaufføren får relevant community-viden med kilde, alder og usikkerhed.

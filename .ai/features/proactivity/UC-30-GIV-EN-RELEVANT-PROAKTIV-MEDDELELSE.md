@@ -21,6 +21,16 @@
 - Gentagne meddelelser om samme hændelse samles.
 - Usikre data markeres tydeligt.
 
+## Acceptkriterier
+
+- [ ] Relevans og prioritet beregnes i backend ud fra position, retning, tid, relation, sikkerhed og brugerindstillinger.
+- [ ] Kun meddelelser over den konfigurerede relevanstærskel leveres proaktivt.
+- [ ] Ikke-kritiske meddelelser afspilles ikke under stille tilstand, men kan gemmes i kø.
+- [ ] Gentagne opdateringer om samme hændelse samles eller erstatter en ældre meddelelse.
+- [ ] VICO forklarer kort hændelsen og hvorfor den er relevant for chaufføren.
+- [ ] Kilde, alder og usikkerhed bevares i meddelelsen.
+- [ ] Chaufførens valg om at afvise eller dæmpe en kategori gemmes og respekteres.
+
 **Resultat**
 
 - Chaufføren har modtaget eller fået gemt en relevant meddelelse efter egne præferencer.

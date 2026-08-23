@@ -19,6 +19,16 @@
 - Ved tvetydig modtager beder VICO om præcisering.
 - Ved fejl forbliver beskeden usendt eller får tydelig fejlstatus.
 
+## Acceptkriterier
+
+- [ ] Modtager og beskedindhold gengives før afsendelse.
+- [ ] Beskeden sendes kun efter chaufførens udtrykkelige bekræftelse.
+- [ ] En tvetydig modtager skal afklares før bekræftelse.
+- [ ] Backend kontrollerer afsenderens rettigheder og den valgte modtager.
+- [ ] VICO siger først ‘sendt’, når backend har bekræftet succes.
+- [ ] Retries eller dobbelte bekræftelser sender ikke samme besked mere end én gang.
+- [ ] Fejl efterlader beskeden med en tydelig ikke-sendt eller fejlstatus.
+
 **Resultat**
 
 - Beskeden er sendt præcis én gang eller tydeligt markeret som ikke sendt.

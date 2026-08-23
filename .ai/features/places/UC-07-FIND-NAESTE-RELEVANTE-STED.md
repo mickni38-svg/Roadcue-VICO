@@ -33,6 +33,15 @@
 - Hvis intet sted matcher alle krav, tilbyder VICO det nærmeste relevante alternativ.
 - Hvis steddata er ufuldstændige, siger VICO præcist, hvilke faciliteter der ikke kan bekræftes.
 
+## Acceptkriterier
+
+- [ ] Kun steder foran chaufføren eller inden for det aftalte søgeområde betragtes som kandidater.
+- [ ] Det valgte sted opfylder alle bekræftede obligatoriske facilitetskrav, eller manglende krav oplyses eksplicit.
+- [ ] Afstand og forventet ankomsttid beregnes af C# eller en godkendt routingservice.
+- [ ] Svaret indeholder stedets navn, afstand eller ankomsttid og de relevante bekræftede faciliteter.
+- [ ] Hvis intet sted opfylder alle krav, præsenteres et tydeligt markeret alternativ i stedet for et falsk fuldt match.
+- [ ] Ufuldstændige eller gamle steddata formidles med passende forbehold.
+
 **Resultat**
 
 - Et relevant sted, afstand, forventet tid og bekræftede faciliteter er fundet.

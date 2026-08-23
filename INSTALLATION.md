@@ -28,15 +28,10 @@ Lav en midlertidig backup af:
 
 ## Første brug
 
-Kør `/start-task` og angiv:
+Åbn denne use case som aktivt dokument:
 
 ```text
-Implementér .ai/features/conversation/UC-01-FOERE-EN-NATURLIG-AI-SAMTALE.md
+.ai/features/conversation/UC-01-FOERE-EN-NATURLIG-AI-SAMTALE.md
 ```
 
-Når taskplanen er korrekt, kør `/continue` og angiv:
-
-```text
-Planen er godkendt. Implementér .ai/tasks/TASK-YYYY-MM-DD-KORT-TITEL.md
-```
-
+Vælg derefter `/start-task`. Når taskplanen er korrekt, åbn den oprettede task som aktivt dokument og vælg `/continue`.

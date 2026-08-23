@@ -4,3 +4,5 @@ langchain
 langgraph
 pydantic-settings
 langchain-openai
+pytest
+pytest-asyncio

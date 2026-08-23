@@ -15,3 +15,10 @@ class ChatRequest(BaseModel):
             "Jeg hedder Michael. Hvem er mine venner?"
         ],
     )
+
+    # Valgfrit trådnavn så klienten kan fortsætte en tidligere samtale.
+    # Er den None, genereres et nyt UUID i /agent/chat og returneres i svaret.
+    thread_id: str | None = Field(
+        default=None,
+        examples=["c1f0a2b4-8e5d-4a2f-9b1c-1234567890ab"],
+    )

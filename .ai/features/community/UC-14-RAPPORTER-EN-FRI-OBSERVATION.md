@@ -26,6 +26,16 @@
 - Hvis position eller vej ikke kan bestemmes, beder VICO om den nødvendige præcisering.
 - Chaufføren kan annullere før publicering.
 
+## Acceptkriterier
+
+- [ ] Chaufføren kan rapportere observationen med fritekst uden at vælge en kategori.
+- [ ] Backend tilføjer position, retning og tidspunkt fra autoriseret kontekst.
+- [ ] VICO læser den fortolkede observation og kontekst tilbage før publicering.
+- [ ] Observationen publiceres først efter chaufførens bekræftelse.
+- [ ] En ny observation starter med en tydelig ubekræftet sikkerhedsstatus.
+- [ ] Rettelse før bekræftelse ændrer den ventende observation uden at skabe en dublet.
+- [ ] Annullering efterlader ingen publiceret observation.
+
 **Resultat**
 
 - En kontekstberiget observation er gemt med tydelig sikkerhedsstatus.

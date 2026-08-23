@@ -23,6 +23,15 @@
 - I POC kan VICO først bruge `GetDrivers` til at finde en simuleret bruger.
 - Hvis flere personer har samme navn, beder VICO om præcisering.
 
+## Acceptkriterier
+
+- [ ] Vennelisten hentes gennem Roadcue Backend for det autoriserede `driverId`.
+- [ ] VICO opfinder ikke personer, relationer eller ID’er, som ikke findes i backendresultatet.
+- [ ] Spørgsmål om en navngiven person besvares ud fra den returnerede relation.
+- [ ] Tomme vennelister returneres som et korrekt tomt resultat og ikke som en fejl.
+- [ ] Navnedubletter udløser præcisering, før en bestemt person vælges.
+- [ ] POC-opslag via `GetDrivers` er markeret som midlertidigt og anvendes ikke som sikker MVP-identitet.
+
 **Resultat**
 
 - Chaufføren har fået korrekte oplysninger om egne relationer.

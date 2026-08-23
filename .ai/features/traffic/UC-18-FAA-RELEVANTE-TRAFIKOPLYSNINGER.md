@@ -19,6 +19,15 @@
 - Hvis kilderne er uenige, forklarer VICO det.
 - Hvis chaufføren spørger, om en reaktion kan betale sig, kan en ekstern routingservice senere beregne et forslag.
 
+## Acceptkriterier
+
+- [ ] Trafikhændelser filtreres efter chaufførens position, retning og relevante vejstrækning.
+- [ ] Officielle trafikdata og communityoplysninger bevarer hver sin kilde- og sikkerhedsstatus.
+- [ ] Gamle eller geografisk irrelevante hændelser udelades.
+- [ ] Svaret indeholder kun trafikforhold, der kan påvirke chaufførens aktuelle kontekst.
+- [ ] Uenighed mellem kilder formidles uden at vælge en ubekræftet version som sikker.
+- [ ] Roadcue giver rådgivende information og aktiverer ikke en alternativ rute uden flowet i UC-32.
+
 **Resultat**
 
 - Chaufføren har fået rådgivende trafikstatus, men Roadcue styrer ikke køretøjet eller leverer fuld navigation.

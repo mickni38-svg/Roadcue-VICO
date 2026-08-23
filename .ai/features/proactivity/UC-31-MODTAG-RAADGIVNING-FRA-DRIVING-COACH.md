@@ -21,6 +21,15 @@
 - Ved utilstrækkelige data gives intet skråsikkert råd.
 - Driving Coach kan slås helt fra.
 
+## Acceptkriterier
+
+- [ ] Driving Coach giver kun råd, når funktionen og den relevante rådstype er aktiveret.
+- [ ] Rådet bygger på et struktureret backend-signal og ikke på en fri LLM-gætning.
+- [ ] VICO formulerer rådet kort og angiver det relevante grundlag.
+- [ ] Utilstrækkelige eller usikre data resulterer i intet råd eller et tydeligt forbehold.
+- [ ] Rådet er formuleret som valgfri rådgivning og aldrig som udført køretøjskontrol.
+- [ ] Dæmpning eller deaktivering forhindrer efterfølgende råd af den valgte type.
+
 **Resultat**
 
 - Chaufføren har fået valgfri rådgivning; VICO har ikke styret køretøjet.

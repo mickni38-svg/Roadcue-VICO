@@ -1,21 +1,3 @@
-Nej, du skal ikke åbne start-task.prompt.md som aktivt dokument.
-
-Gør sådan i Visual Studio:
-
-Åbn Copilot Chat i Agent Mode.
-Skriv eller vælg:
-/start-task
-Indsæt use-case-stien i inputfeltet:
-Analysér og planlæg implementeringen af:
-
-.ai/features/conversation/UC-01-FOERE-EN-NATURLIG-AI-SAMTALE.md
-
-Undersøg eksisterende kode først, og planlæg kun det, der mangler.
-
-Du kan eventuelt have UC-01-filen åben, men det er ikke nødvendigt, fordi du angiver den præcise sti.
-
-start-task.prompt.md er selve Copilot-kommandoen. Den skal ligge i:
-
-.github/prompts/start-task.prompt.md
-
-Copilot indlæser den, når du bruger /start-task. Du skal ikke åbne eller vedhæfte promptfilen manuelt.
+/start-task 
+Analysér og planlæg implementeringen af den aktive UC-01. 
+Undersøg eksisterende kode og tests, opret eller opdatér en task under .ai/tasks, og stop uden at implementere kode.

@@ -17,6 +17,15 @@
 - “Tre chauffører har bekræftet, at der stadig er ledige pladser.”
 - “Svarene er modstridende, så jeg kan ikke bekræfte situationen.”
 
+## Acceptkriterier
+
+- [ ] Kun svar, der tilhører samme autoriserede communityspørgsmål, indgår i opsummeringen.
+- [ ] Backend leverer antal, alder, geografisk relevans, enighed og sikkerhedsstatus som strukturerede data.
+- [ ] VICO ændrer ikke backendens beregnede sikkerhedsstatus.
+- [ ] Enighed og uenighed mellem svar beskrives tydeligt.
+- [ ] Opsummeringen indeholder ikke unødvendige personoplysninger om svarpersonerne.
+- [ ] Resultatet er én kort opsummering og ikke en ukontrolleret oplæsning af alle svar.
+
 **Resultat**
 
 - Chaufføren får en samlet, sporbar og korrekt usikkerhedsmarkeret status.

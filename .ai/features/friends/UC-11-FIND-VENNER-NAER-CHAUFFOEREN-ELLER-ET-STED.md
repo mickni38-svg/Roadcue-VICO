@@ -22,6 +22,15 @@
 - Venner uden aktiv deling vises ikke som placeret.
 - Hvis ingen matches findes, siger VICO det uden at afsløre skjulte positioner.
 
+## Acceptkriterier
+
+- [ ] Søgeområdet identificeres entydigt fra aktuel position eller samtalens valgte sted.
+- [ ] Den geografiske nærhedsberegning udføres deterministisk i backend.
+- [ ] Kun venner med gyldig lokationsdeling og tilstrækkeligt aktuelle positioner returneres.
+- [ ] Venner uden tilladelse eller aktuel position afsløres ikke indirekte.
+- [ ] Resultatet angiver det anvendte sted eller område og relevant tidsstempel.
+- [ ] Et tomt resultat formidles uden at antyde, hvor skjulte venner befinder sig.
+
 **Resultat**
 
 - Chaufføren får en privatlivssikker liste over relevante venner.

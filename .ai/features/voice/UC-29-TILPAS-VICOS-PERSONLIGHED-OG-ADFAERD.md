@@ -25,6 +25,16 @@
 - Brugeren kan aktivere stille tilstand.
 - Personlighedsindstillinger kan aldrig tilsidesætte sikkerhed, autorisation eller sandhedskrav.
 
+## Acceptkriterier
+
+- [ ] Hver understøttet præference kan læses, ændres og gendannes for den autoriserede bruger.
+- [ ] Ved stemmebetjening læses ændringen tilbage før lagring, når den har væsentlig effekt.
+- [ ] Gemte præferencer anvendes i efterfølgende samtaler for samme bruger.
+- [ ] En brugers præferencer påvirker ikke andre brugere.
+- [ ] Stille tilstand og afbrydelseskategorier respekteres af relevante meddelelsesflows.
+- [ ] Personlighedsindstillinger kan ikke tilsidesætte sandhed, autorisation, samtykke eller sikkerhed.
+- [ ] En ugyldig eller ikke-understøttet værdi afvises med en forståelig forklaring.
+
 **Resultat**
 
 - VICO kommunikerer efter brugerens præferencer inden for faste sikkerhedsrammer.

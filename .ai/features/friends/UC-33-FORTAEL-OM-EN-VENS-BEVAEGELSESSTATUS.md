@@ -29,6 +29,15 @@
 - Hvis GPS-opdateringen er gammel, oplyser VICO, at status ikke længere er sikker.
 - Hvis bevægelsesstatus ikke kan bestemmes, siger VICO det frem for at gætte.
 
+## Acceptkriterier
+
+- [ ] Vennens delingstilladelse kontrolleres før position eller bevægelsesstatus beregnes.
+- [ ] Bevægelsesstatus beregnes i backend ud fra flere målinger og ikke af LLM’en.
+- [ ] Svaret indeholder tidspunktet for den seneste anvendte positionsopdatering.
+- [ ] Et kendt sted nævnes kun, når backendens geografiske match opfylder den fastsatte tolerance.
+- [ ] Gamle eller utilstrækkelige målinger resulterer i en usikker eller ukendt status.
+- [ ] Manglende deling afslører hverken position, stilstandstid eller indirekte lokationsoplysninger.
+
 **Resultat**
 
 - Chaufføren får en autoriseret og deterministisk beregnet bevægelsesstatus.

@@ -25,6 +25,16 @@
 - Chaufføren kan annullere den.
 - Hvis ingen accepterer, fortæller VICO det uden gentagne afbrydelser.
 
+## Acceptkriterier
+
+- [ ] Formål, tidsrum og eventuelt sted læses tilbage før forespørgslen sendes.
+- [ ] Ingen forespørgsel sendes uden afsenderens bekræftelse.
+- [ ] Kun berettigede og relevante modtagere udvælges af backend.
+- [ ] Kontaktoplysninger deles først, når begge parter har accepteret.
+- [ ] Afvisning eller manglende svar afslører ingen yderligere oplysninger om modtageren.
+- [ ] Forespørgslen kan annulleres og udløber automatisk uden efterfølgende kontakt.
+- [ ] Samme accepterede forespørgsel opretter ikke dublerede kontakter.
+
 **Resultat**
 
 - En frivillig kontakt er etableret eller afsluttet uden match.

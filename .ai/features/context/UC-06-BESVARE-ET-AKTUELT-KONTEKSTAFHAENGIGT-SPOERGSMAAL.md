@@ -19,6 +19,15 @@
 - Hvis position ikke er tilgængelig, beder VICO om en by eller et område.
 - Hvis den eksterne tjeneste fejler, oplyser VICO, at aktuelle data ikke kan hentes.
 
+## Acceptkriterier
+
+- [ ] VICO anvender aktuelle data eller en deterministisk service, når svaret afhænger af position eller tidspunkt.
+- [ ] Position og tidspunkt sendes som strukturerede værdier og gættes ikke af modellen.
+- [ ] Svaret angiver relevant sted og tidspunkt, så konteksten er forståelig.
+- [ ] Manglende position udløser et målrettet spørgsmål om by eller område.
+- [ ] Fejl hos den eksterne service resulterer ikke i et opdigtet aktuelt svar.
+- [ ] Et efterfølgende spørgsmål i samme tråd kan referere til det returnerede sted eller resultat.
+
 **Resultat**
 
 - Chaufføren får et aktuelt og kontekstbaseret svar uden at VICO gætter.

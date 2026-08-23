@@ -29,6 +29,16 @@
 - Hvis token er ugyldigt, foretages ingen brugerrelaterede tool-kald.
 - Hvis lokationssamtykke mangler, anvendes positionen ikke.
 
+## Acceptkriterier
+
+- [ ] MVP-identiteten kommer fra en betroet login-/tokenkontekst og ikke fra et navn i brugerens prompt.
+- [ ] POC-brugere og GPS-data er tydeligt markeret som simulerede.
+- [ ] Ugyldig eller manglende identitet forhindrer personlige tool-kald.
+- [ ] Position anvendes kun, når det nødvendige lokationssamtykke findes.
+- [ ] Tilladt position, retning, hastighed og tidspunkt knyttes til den korrekte chauffør.
+- [ ] VICO beder ikke om kontekst, som allerede er leveret og stadig er gyldig.
+- [ ] Kontekst fra én chauffør kan ikke anvendes i en anden chaufførs session.
+
 **Resultat**
 
 - VICO har en autoriseret bruger- og kørselskontekst.

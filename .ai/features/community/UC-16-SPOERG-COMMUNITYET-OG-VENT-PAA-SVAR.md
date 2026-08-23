@@ -25,6 +25,17 @@
 - Hvis ingen svarer, fortæller VICO det.
 - For gamle svar bruges ikke som aktuelle oplysninger.
 
+## Acceptkriterier
+
+- [ ] Communityspørgsmålet oprettes først efter chaufførens udtrykkelige accept.
+- [ ] Modtagere udvælges efter backendens relevans-, tilladelses- og privatlivsregler.
+- [ ] Det ventende flow får et stabilt ID, timeout og en autoriseret ejer.
+- [ ] Flowet og allerede modtagne svar kan gendannes efter en servicegenstart.
+- [ ] Dublerede events eller retries opretter ikke spørgsmålet eller samme svar flere gange.
+- [ ] Annullering og timeout forhindrer senere svar i at blive præsenteret som aktuelle for flowet.
+- [ ] VICO kan oplyse status uden at afsløre modtagere, som ikke har svaret.
+- [ ] Det afsluttende resultat skelner mellem svar, manglende svar og udløb.
+
 **Resultat**
 
 - Et asynkront community-spørgsmål er afsluttet, annulleret eller udløbet.

@@ -10,6 +10,9 @@ from langgraph.graph import END, START, MessagesState, StateGraph
 # ToolNode = en færdiglavet node der eksekverer tools
 # tools_condition = en færdiglavet betingelse der afgør om agenten skal kalde et tool
 from langgraph.prebuilt import ToolNode, tools_condition
+# MemorySaver = in-memory checkpointer der gemmer samtalens state pr. thread_id.
+# Kræves for at LangGraph kan genbruge historik mellem requests i samme tråd.
+from langgraph.checkpoint.memory import MemorySaver
 
 # App-konfiguration: henter model-navn og API-nøgle fra .env
 from app.config import settings
@@ -105,4 +108,6 @@ builder.add_conditional_edges(
 builder.add_edge("tools", "assistant")
 
 # Kompilér grafen til en færdig agent der kan kaldes med .ainvoke().
-vico_agent = builder.compile()
+# checkpointer=MemorySaver() giver pr. thread_id-persistens af MessagesState
+# på tværs af requests (in-memory; nulstilles ved process-restart).
+vico_agent = builder.compile(checkpointer=MemorySaver())

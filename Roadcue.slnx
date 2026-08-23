@@ -1,9 +1,11 @@
 <Solution>
-  <Folder Name="/docs/">
-    <File Path=".ai/00-ROUTER.md" />
-    <File Path="docs/Roadcue-Problemformulering-og-Kravspecifikation.md" />
-    <File Path="docs/Roadcue-VICO-Usecase-Katalog.md" />
+  <Folder Name="/conversations-01-04/">
+    <File Path=".ai/Roadcue.AI.Context/UC-01-FOERE-EN-NATURLIG-AI-SAMTALE.md" />
+    <File Path=".ai/Roadcue.AI.Context/UC-02-FOERE-EN-SAMMENHAENGENDE-SAMTALE.md" />
+    <File Path=".ai/Roadcue.AI.Context/UC-03-VAELGE-DATAKILDER-OG-TOOLS-AUTOMATISK.md" />
+    <File Path=".ai/Roadcue.AI.Context/UC-04-HAANDTERE-MANGLENDE-ELLER-USIKKER-VIDEN.md" />
   </Folder>
+  <Project Path=".ai/Roadcue.AI.Context/Roadcue.AI.Context.csproj" Id="95aa9eec-3732-49b9-8011-aac60617ee30" />
   <Project Path="src/Roadcue.Api/Roadcue.Api.csproj" />
   <Project Path="src/Roadcue.Application/Roadcue.Application.csproj" />
   <Project Path="src/Roadcue.Domain/Roadcue.Domain.csproj" />

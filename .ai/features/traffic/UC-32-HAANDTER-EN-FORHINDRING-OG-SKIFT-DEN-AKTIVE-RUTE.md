@@ -34,6 +34,17 @@
 - Hvis routingservicen ikke kan beregne et alternativ, ændres ruten ikke.
 - Hvis navigationstjenesten afviser ændringen, må VICO ikke sige, at ruten er skiftet.
 
+## Acceptkriterier
+
+- [ ] Backend verificerer, at forhindringen er relevant for chaufførens aktive rute og retning.
+- [ ] Kilde, alder og sikkerhedsstatus for forhindringen indgår i VICO’s forklaring.
+- [ ] Alternativets afstands- og tidsforskel kommer fra en godkendt routingservice.
+- [ ] VICO læser konsekvenserne af ruteskiftet tilbage og kræver chaufførens accept.
+- [ ] Der sendes ingen ruteændring til navigationstjenesten ved afvisning eller manglende svar.
+- [ ] VICO bekræfter først ruteskiftet efter navigationstjenestens succesfulde svar.
+- [ ] Fejl eller timeout bevarer den eksisterende rute og formidles tydeligt.
+- [ ] Gentagne retries må ikke aktivere samme ruteændring flere gange.
+
 **Resultat**
 
 - Den eksterne navigation har enten aktiveret den godkendte rute, eller den oprindelige rute er bevaret.

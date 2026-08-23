@@ -1,5 +1,7 @@
 # FastAPI er et asynkront Python web-framework – svarer til ASP.NET Core Minimal API.
 # HTTPException bruges til at returnere fejl med HTTP-statuskoder.
+import uuid
+
 from fastapi import FastAPI, HTTPException
 # Meddelelses-typer: AIMessage = svar fra modellen, HumanMessage = brugerens input
 from langchain_core.messages import AIMessage, HumanMessage
@@ -47,6 +49,10 @@ async def test_get_driver_friends(driver_id: str):
 @app.post("/agent/chat")
 async def ask_vico_agent(request: ChatRequest):
     try:
+        # Genbrug klientens thread_id hvis det er sat, ellers generér et nyt.
+        # thread_id styrer hvilken samtalehistorik LangGraph-checkpointeren læser/skriver.
+        thread_id = request.thread_id or str(uuid.uuid4())
+
         # Kald agenten med brugerens besked pakket som en HumanMessage.
         # ainvoke er den asynkrone version af invoke – svarer til await i C#.
         # recursion_limit forhindrer uendelige tool-kald-løkker.
@@ -57,7 +63,8 @@ async def ask_vico_agent(request: ChatRequest):
                 ]
             },
             config={
-                "recursion_limit": 10
+                "configurable": {"thread_id": thread_id},
+                "recursion_limit": 10,
             },
         )
 
@@ -73,7 +80,8 @@ async def ask_vico_agent(request: ChatRequest):
             )
 
         return {
-            "answer": final_message.content
+            "answer": final_message.content,
+            "thread_id": thread_id,
         }
 
     except HTTPException:

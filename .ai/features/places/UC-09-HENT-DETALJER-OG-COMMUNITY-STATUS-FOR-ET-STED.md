@@ -23,6 +23,15 @@
 - Hvis der ikke findes aktuelle observationer, siger VICO det.
 - VICO kan senere tilbyde at starte UC-14.
 
+## Acceptkriterier
+
+- [ ] Stedet identificeres entydigt fra samtalekontekst eller chaufførens formulering.
+- [ ] Officielle steddata og communityobservationer præsenteres som forskellige kildetyper.
+- [ ] Kun observationer, der består backendens filtre for sted, alder og gyldighed, anvendes.
+- [ ] Svaret indeholder tidspunkt eller alder for aktuelle communityoplysninger.
+- [ ] Modstridende observationer opsummeres som usikre og ikke som én sikker status.
+- [ ] Hvis der ikke findes aktuelle observationer, oplyses det eksplicit.
+
 **Resultat**
 
 - Chaufføren har en samlet, kildeopdelt status for stedet.

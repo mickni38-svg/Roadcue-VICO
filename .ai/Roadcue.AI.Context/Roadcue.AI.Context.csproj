@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="**\*.md" />
+
+    <None
+      Include="..\.github\**\*.md"
+      Link=".github\%(RecursiveDir)%(Filename)%(Extension)" />
+
+    <None
+      Include="..\docs\**\*.md"
+      Link="docs\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

@@ -23,6 +23,15 @@
 - Hvis datagrundlaget er utilstrækkeligt, gives ingen præcis prognose.
 - Chaufføren træffer altid selv beslutningen.
 
+## Acceptkriterier
+
+- [ ] Køens begyndelse, slutning, længde og udvikling beregnes af deterministiske services.
+- [ ] Chaufførens forventede ankomsttid beregnes ud fra aktuelle autoriserede kontekstdata.
+- [ ] Prognosen indeholder beregningstidspunkt, datagrundlag og usikkerhed.
+- [ ] Der returneres ingen præcis prognose, når datagrundlaget ikke opfylder minimumskravene.
+- [ ] Et alternativt ruteforslag kommer fra en godkendt ekstern routingservice.
+- [ ] VICO præsenterer forslaget som rådgivning og ændrer ikke ruten automatisk.
+
 **Resultat**
 
 - Chaufføren har fået en usikkerhedsmarkeret prognose, ikke en autonom beslutning.

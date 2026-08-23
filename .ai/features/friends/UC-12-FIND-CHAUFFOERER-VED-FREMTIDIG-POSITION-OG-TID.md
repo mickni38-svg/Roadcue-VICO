@@ -21,6 +21,15 @@
 - Hvis ingen har delt fremtidig tilgængelighed, gives intet match.
 - Hvis prognosen er for usikker, forklarer VICO det.
 
+## Acceptkriterier
+
+- [ ] Sted, tidspunkt og ønsket relation eller gruppe udledes som separate kriterier.
+- [ ] Forventede positioner og tidsvinduer beregnes deterministisk i backend.
+- [ ] Kun chauffører, som har accepteret denne type fremtidig søgning, kan matches.
+- [ ] Resultater præsenteres som forventede og inkluderer tidsvindue eller usikkerhed.
+- [ ] Prognoser med for stor usikkerhed returneres ikke som konkrete fremtidige placeringer.
+- [ ] Ingen match afslører ikke oplysninger om chauffører, som har fravalgt deling.
+
 **Resultat**
 
 - Chaufføren får mulige fremtidige matches med tydelig usikkerhed.
