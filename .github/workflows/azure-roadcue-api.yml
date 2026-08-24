@@ -40,6 +40,10 @@ jobs:
       - run: dotnet build src/Roadcue.Api/Roadcue.Api.csproj --configuration Release --no-restore
       - name: Build API container
         run: docker build --file src/Roadcue.Api/Dockerfile --tag roadcue-api:${IMAGE_TAG} .
+      - name: Verify API image contract
+        run: |
+          test -n "$(docker inspect --format '{{.Config.User}}' roadcue-api:${IMAGE_TAG})"
+          docker inspect roadcue-api:${IMAGE_TAG} | grep -q '8080/tcp'
 
   deploy:
     if: github.event_name != 'pull_request'
