@@ -9,6 +9,15 @@ class Settings(BaseSettings):
     roadcue_api_base_url: str          # URL til Roadcue's backend-API
     openai_api_key: str                # Hemmelig API-nøgle til OpenAI
     openai_model: str = "gpt-4.1-mini" # Model-navn med standardværdi
+    cors_allowed_origins: str = ""      # Kommaseparerede HTTPS-origins til Angular
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.cors_allowed_origins.split(",")
+            if origin.strip()
+        ]
 
     model_config = SettingsConfigDict(
         env_file=".env",           # Læs værdier fra denne fil

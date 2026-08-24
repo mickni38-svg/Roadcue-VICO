@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { VoiceComponent } from './voice/voice.component';
+import { VoiceComponent } from './features/voice/voice.component';
 
 @Component({
   selector: 'app-root',

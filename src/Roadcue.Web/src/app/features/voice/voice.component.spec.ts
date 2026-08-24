@@ -5,7 +5,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { VoiceComponent } from './voice.component';
-import { AGENT_CHAT_ENDPOINT } from './agent-chat.service';
+import { getAgentChatEndpoint } from './agent-chat.service';
 import { SPEECH_RECOGNITION_ADAPTER } from './speech-recognition.adapter';
 import { SPEECH_SYNTHESIS_ADAPTER } from './speech-synthesis.adapter';
 
@@ -93,7 +93,7 @@ describe('VoiceComponent', () => {
     // recognition resolved; state moved to processing
     expect(cmp.state()).toBe('processing');
 
-    const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
+    const req = httpMock.expectOne(getAgentChatEndpoint());
     expect(req.request.body).toEqual({
       message: 'hej vico',
       thread_id: null,
@@ -113,14 +113,14 @@ describe('VoiceComponent', () => {
     const first = cmp.onTap();
     await flush();
     httpMock
-      .expectOne(AGENT_CHAT_ENDPOINT)
+      .expectOne(getAgentChatEndpoint())
       .flush({ answer: 'ok', thread_id: 't-42' });
     await first;
 
     recognition.transcript = 'anden ytring';
     const second = cmp.onTap();
     await flush();
-    const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
+    const req = httpMock.expectOne(getAgentChatEndpoint());
     expect(req.request.body).toEqual({
       message: 'anden ytring',
       thread_id: 't-42',
@@ -133,7 +133,7 @@ describe('VoiceComponent', () => {
     const cmp = build();
     recognition.transcript = '   ';
     await cmp.onTap();
-    httpMock.expectNone(AGENT_CHAT_ENDPOINT);
+    httpMock.expectNone(getAgentChatEndpoint());
     expect(cmp.state()).toBe('error');
   });
 
@@ -142,14 +142,14 @@ describe('VoiceComponent', () => {
     const first = cmp.onTap();
     await flush();
     httpMock
-      .expectOne(AGENT_CHAT_ENDPOINT)
+      .expectOne(getAgentChatEndpoint())
       .flush({ answer: 'ok', thread_id: 't-x' });
     await first;
 
     const second = cmp.onTap();
     await flush();
     httpMock
-      .expectOne(AGENT_CHAT_ENDPOINT)
+      .expectOne(getAgentChatEndpoint())
       .flush('boom', { status: 500, statusText: 'err' });
     await second;
     expect(cmp.state()).toBe('error');
@@ -158,7 +158,7 @@ describe('VoiceComponent', () => {
     recognition.transcript = 'tredje';
     const third = cmp.onTap();
     await flush();
-    const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
+    const req = httpMock.expectOne(getAgentChatEndpoint());
     expect(req.request.body.thread_id).toBe('t-x');
     req.flush({ answer: 'ok', thread_id: 't-x' });
     await third;
@@ -174,7 +174,7 @@ describe('VoiceComponent', () => {
     const tap = cmp.onTap();
     await flush();
     httpMock
-      .expectOne(AGENT_CHAT_ENDPOINT)
+      .expectOne(getAgentChatEndpoint())
       .flush({ answer: 'noget langt', thread_id: 't1' });
     await flush();
     expect(cmp.state()).toBe('speaking');

@@ -12,7 +12,18 @@ export interface AgentChatResponse {
   thread_id: string;
 }
 
-export const AGENT_CHAT_ENDPOINT = '/api/agent/chat';
+declare global {
+  interface Window {
+    __roadcueConfig?: {
+      agentChatEndpoint?: string;
+      roadcueApiBaseUrl?: string;
+    };
+  }
+}
+
+export function getAgentChatEndpoint(): string {
+  return window.__roadcueConfig?.agentChatEndpoint || '/api/agent/chat';
+}
 
 @Injectable({ providedIn: 'root' })
 export class AgentChatService {
@@ -27,7 +38,7 @@ export class AgentChatService {
       thread_id: this._threadId(),
     };
     const response = await firstValueFrom(
-      this.http.post<AgentChatResponse>(AGENT_CHAT_ENDPOINT, payload),
+      this.http.post<AgentChatResponse>(getAgentChatEndpoint(), payload),
     );
     if (response?.thread_id) {
       this._threadId.set(response.thread_id);

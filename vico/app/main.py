@@ -3,6 +3,7 @@
 import uuid
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 # Meddelelses-typer: AIMessage = svar fra modellen, HumanMessage = brugerens input
 from langchain_core.messages import AIMessage, HumanMessage
 
@@ -10,7 +11,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from app.graphs.vico_agent import vico_agent
 # Pydantic-model der validerer request-body på POST-endpoints
 from app.models.chat_request import ChatRequest
-from fastapi import FastAPI
+from app.config import settings
 
 # Tools importeres direkte her for at kunne tilbyde test-endpoints
 from app.tools.get_driver_friends import get_driver_friends
@@ -22,6 +23,15 @@ app = FastAPI(
     title="Roadcue VICO",
     version="0.1.0",
 )
+
+if settings.cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["Content-Type"],
+    )
 
 
 # Simpelt liveness-check endpoint – bruges typisk af load balancers og container-orkestratorer.

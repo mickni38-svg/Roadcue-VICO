@@ -1,7 +1,7 @@
 # Task: UC-34 Klargør Roadcue til Azure-deployment
 
 **Dato:** 2026-08-24  
-**Status:** Ready  
+**Status:** In Progress
 **Use case:** [../features/deployment/UC-34-DEPLOY-ROADCUE-TIL-AZURE.md](../features/deployment/UC-34-DEPLOY-ROADCUE-TIL-AZURE.md)  
 **Type:** Feature
 
