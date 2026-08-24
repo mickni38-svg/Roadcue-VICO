@@ -114,16 +114,35 @@ Repositoryet kan bygge, teste og deploye Angular til Azure Static Web Apps samt 
 
 ## Implementeringslog
 
-Udfyldes først under `/continue`.
-
 - Ændrede filer:
+  - Separate Dockerfiles i `src/Roadcue.Api/` og `vico/` samt root `.dockerignore`.
+  - Tre path-filtrerede workflows i `.github/workflows/` til Angular, .NET og VICO.
+  - .NET `Program.cs`/`appsettings.json` med konfigurerbar CORS, `/health` og development-only seed.
+  - VICO `config.py`/`main.py` med konfigurerbar CORS; eksisterende `/health` bevaret.
+  - Angular runtime-konfiguration, Static Web Apps-konfiguration og endpointtests.
+  - `docs/AZURE-DEPLOYMENT.md` med Azure-forudsætninger, secrets/variables og røgtest.
+  - Python-tests for UC-01..UC-03 rettet, så `ChatOpenAI` mockes ved kilden og aldrig kaldes live.
 - Vigtige beslutninger:
+  - Angular læser `runtime-config.js`; lokal default er fortsat `/api/agent/chat`, mens workflowet indsætter Azure HTTPS-URLs ved produktionsbuild.
+  - Kun .NET dokumenteres med `ConnectionStrings__Roadcue`; VICO får kun `ROADCUE_API_BASE_URL`.
+  - GitHub bruger OIDC til Azure for Container Apps og et Static Web Apps deploymenttoken til Angular.
+  - Container-images tagges med Git commit-SHA og .NET/Python deployes uafhængigt.
 - Afvigelser fra planen:
+  - Angular-appens eksisterende imports pegede på `./voice/`, selv om featurefilerne ligger i `./features/voice/`; imports blev rettet, fordi produktionsbuild ellers fejlede.
+  - Azure-ressourcer og end-to-end-røgtest er ikke udført, da særskilt godkendelse og konkrete ressourcenavne/secrets mangler.
 
 ## Resultat af validering
 
-Udfyldes først under `/continue`. Gem korte resultater, ikke komplette logs.
-
 - Automatiske tests:
+  - Python: `17 passed`; alle model- og HTTP-afhængigheder er mockede, og ingen live OpenAI blev kaldt.
+  - Angular: testbundtet kompilerer; lokal Karma-kørsel kan ikke starte, fordi valideringsmiljøet ikke har en Chrome-binær.
+  - Angular: `npm run build` er grøn; `runtime-config.js` og `staticwebapp.config.json` findes i build-outputtet.
+  - Workflow-YAML og JSON-konfiguration er syntaktisk valideret.
 - Manuel kontrol:
+  - Frontend-buildet er scannet uden database-connection strings eller secrets.
+  - Python- og Angular-konfiguration indeholder ingen Simply.com-databaseadgang.
+  - Implementeringen indeholder ingen AKS-, Minikube-, Helm- eller Kubernetes-filer.
 - Resterende begrænsninger:
+  - Lokalt miljø mangler .NET 10 SDK og Docker-daemon; .NET-build og de to container-builds skal derfor valideres af GitHub Actions eller i et egnet udviklingsmiljø.
+  - Der blev ikke registreret et GitHub Actions-run umiddelbart efter publicering af det nye workflow-commit.
+  - Azure-deployment, Container App health probes, Simply.com-forbindelse og end-to-end-røgtest afventer de manuelt oprettede og særskilt godkendte Azure-ressourcer.
