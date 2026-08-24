@@ -47,6 +47,7 @@ async def test_get_driver_friends(driver_id: str):
 
 # Hoved-endpoint: modtager en bruger-besked og returnerer agentens svar.
 @app.post("/agent/chat")
+@app.post("/api/agent/chat")
 async def ask_vico_agent(request: ChatRequest):
     try:
         # Genbrug klientens thread_id hvis det er sat, ellers generér et nyt.

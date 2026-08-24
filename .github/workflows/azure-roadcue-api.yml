@@ -1,0 +1,71 @@
+name: Azure - Roadcue API
+
+on:
+  pull_request:
+    paths:
+      - "src/Roadcue.Api/**"
+      - "src/Roadcue.Application/**"
+      - "src/Roadcue.Domain/**"
+      - "src/Roadcue.Infrastructure/**"
+      - ".github/workflows/azure-roadcue-api.yml"
+      - ".dockerignore"
+  push:
+    branches: [master]
+    paths:
+      - "src/Roadcue.Api/**"
+      - "src/Roadcue.Application/**"
+      - "src/Roadcue.Domain/**"
+      - "src/Roadcue.Infrastructure/**"
+      - ".github/workflows/azure-roadcue-api.yml"
+      - ".dockerignore"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - run: dotnet restore Roadcue.slnx
+      - run: dotnet build Roadcue.slnx --configuration Release --no-restore
+      - name: Build API container
+        run: docker build --file src/Roadcue.Api/Dockerfile --tag roadcue-api:${IMAGE_TAG} .
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build-test
+    runs-on: ubuntu-latest
+    environment: azure-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Build and push image
+        env:
+          ACR_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
+        run: |
+          az acr login --name "$ACR_NAME"
+          docker build --file src/Roadcue.Api/Dockerfile --tag "$ACR_NAME.azurecr.io/roadcue-api:$IMAGE_TAG" .
+          docker push "$ACR_NAME.azurecr.io/roadcue-api:$IMAGE_TAG"
+      - name: Deploy Container App
+        env:
+          ACR_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          CONTAINER_APP: ${{ vars.AZURE_ROADCUE_API_APP_NAME }}
+        run: >-
+          az containerapp update
+          --name "$CONTAINER_APP"
+          --resource-group "$RESOURCE_GROUP"
+          --image "$ACR_NAME.azurecr.io/roadcue-api:$IMAGE_TAG"
