@@ -149,6 +149,8 @@ Roadcue-repositoryet kan bygge, teste og deploye Angular til Azure Static Web Ap
   - Python: `18 passed`, inklusive alias-kontrakttesten; ingen live OpenAI eller live Roadcue HTTP.
   - Angular: `npm run build` er grøn, og `staticwebapp.config.json` findes i production output.
   - Angular-testbundtet kompilerer; lokal Karma kan ikke starte, fordi valideringsmiljøet mangler Chrome-binæren.
+  - GitHub Actions: Angular build og ChromeHeadless-tests er grønne; preview-deploy springes over, indtil Static Web Apps-tokenet er konfigureret.
+  - GitHub Actions: VICO-tests og VICO Docker-build er grønne.
   - Workflow-YAML og Static Web Apps-JSON er syntaktisk valideret.
 - Manuel kontrol:
   - Angular bruger fortsat konstanten `AGENT_CHAT_ENDPOINT = '/api/agent/chat'`.
