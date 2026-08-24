@@ -35,8 +35,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
-      - run: dotnet restore Roadcue.slnx
-      - run: dotnet build Roadcue.slnx --configuration Release --no-restore
+      - run: dotnet restore src/Roadcue.Api/Roadcue.Api.csproj
+      - run: dotnet build src/Roadcue.Api/Roadcue.Api.csproj --configuration Release --no-restore
       - name: Build API container
         run: docker build --file src/Roadcue.Api/Dockerfile --tag roadcue-api:${IMAGE_TAG} .
 
