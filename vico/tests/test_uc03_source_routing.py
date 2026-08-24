@@ -17,7 +17,7 @@ def _reload_agent_with_mocked_model(responses):
 
     Returnerer (agent, patcher). Kalderen skal stoppe patcheren i finally.
     """
-    patcher = patch("app.graphs.vico_agent.ChatOpenAI")
+    patcher = patch("langchain_openai.ChatOpenAI")
     chat_openai_cls = patcher.start()
 
     mock_model = AsyncMock()
