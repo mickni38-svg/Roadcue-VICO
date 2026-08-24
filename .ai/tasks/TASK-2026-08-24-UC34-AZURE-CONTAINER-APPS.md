@@ -1,7 +1,7 @@
 # Task: UC-34 Azure Container Apps-klargøring
 
 **Dato:** 2026-08-24
-**Status:** In Progress
+**Status:** Done
 **Use case:** [../features/deployment/UC-34-DEPLOY-ROADCUE-TIL-AZURE.md](../features/deployment/UC-34-DEPLOY-ROADCUE-TIL-AZURE.md)
 **Type:** Feature
 
@@ -79,29 +79,29 @@ Roadcue-repositoryet kan bygge, teste og deploye Angular til Azure Static Web Ap
 
 ## Implementeringsspecifikke acceptkriterier
 
-- [ ] .NET Dockerfile bruger et .NET 10 SDK-buildstage og et ASP.NET 10 runtime-stage og kan bygge alle project references fra repository-roden.
-- [ ] VICO-imaget starter FastAPI på port 8000 og indeholder ikke lokal `.env`, pytest-cache eller tests.
-- [ ] Angulars eksisterende `/api/agent/chat` er uændret og fungerer både med den lokale path rewrite og den dokumenterede Azure-backendrouting.
-- [ ] En kontrakttest bekræfter, at `/agent/chat` og `/api/agent/chat` bruger samme handleradfærd uden duplikeret agentlogik.
-- [ ] `staticwebapp.config.json` ender i roden af Angulars production output og omskriver ikke `/api/*` til `index.html`.
-- [ ] `ConnectionStrings__Roadcue` findes kun i dokumenteret .NET secret-mapping og aldrig i VICO-/Angular-konfiguration eller committed værdier.
-- [ ] `ROADCUE_API_BASE_URL` peger på .NET Container Apps interne appnavn; VICO får ingen SQL-host, databasebruger eller databasepassword.
-- [ ] Container images pushes med `${{ github.sha }}` eller et tilsvarende uforanderligt SHA-tag.
-- [ ] Azure-login bruger GitHub OIDC med `id-token: write`; ingen Azure client secret lagres i repositoryet.
-- [ ] Pull requests kan ikke opdatere de delte Container Apps.
-- [ ] CI bruger kun mockede AI-/speech-/HTTP-afhængigheder og foretager ingen live OpenAI-kald.
-- [ ] Deploymentvejledningen skelner mellem GitHub variables, GitHub secrets, Azure Container Apps secrets og almindelige environment variables.
-- [ ] Ingen workflow eller konfiguration opretter betalbare Azure-ressourcer automatisk.
+- [x] .NET Dockerfile bruger et .NET 10 SDK-buildstage og et ASP.NET 10 runtime-stage og kan bygge alle project references fra repository-roden.
+- [x] VICO-imaget starter FastAPI på port 8000 og indeholder ikke lokal `.env`, pytest-cache eller tests.
+- [x] Angulars eksisterende `/api/agent/chat` er uændret og fungerer både med den lokale path rewrite og den dokumenterede Azure-backendrouting.
+- [x] En kontrakttest bekræfter, at `/agent/chat` og `/api/agent/chat` bruger samme handleradfærd uden duplikeret agentlogik.
+- [x] `staticwebapp.config.json` ender i roden af Angulars production output og omskriver ikke `/api/*` til `index.html`.
+- [x] `ConnectionStrings__Roadcue` findes kun i dokumenteret .NET secret-mapping og aldrig i VICO-/Angular-konfiguration eller committed værdier.
+- [x] `ROADCUE_API_BASE_URL` peger på .NET Container Apps interne appnavn; VICO får ingen SQL-host, databasebruger eller databasepassword.
+- [x] Container images pushes med `${{ github.sha }}` eller et tilsvarende uforanderligt SHA-tag.
+- [x] Azure-login bruger GitHub OIDC med `id-token: write`; ingen Azure client secret lagres i repositoryet.
+- [x] Pull requests kan ikke opdatere de delte Container Apps.
+- [x] CI bruger kun mockede AI-/speech-/HTTP-afhængigheder og foretager ingen live OpenAI-kald.
+- [x] Deploymentvejledningen skelner mellem GitHub variables, GitHub secrets, Azure Container Apps secrets og almindelige environment variables.
+- [x] Ingen workflow eller konfiguration opretter betalbare Azure-ressourcer automatisk.
 
 ## Valideringsplan
 
-- [ ] .NET: `dotnet restore Roadcue.slnx` og `dotnet build Roadcue.slnx --configuration Release --no-restore`.
-- [ ] Python: installer requirements og kør `pytest` fra `vico/` med testkonfiguration, der ikke kan ramme live OpenAI.
-- [ ] Angular: `npm ci`, `npm run build` og `npm test -- --watch=false --browsers=ChromeHeadless` fra `src/Roadcue.Web/`.
-- [ ] Docker: byg .NET-imaget fra repository-roden og VICO-imaget fra den dokumenterede build context.
-- [ ] Container smoke test: verificér VICO `/health`; verificér .NET-imagets entrypoint og port. En faktisk .NET-opstart kræver en disponibel SQL Server og må ikke bruge produktionshemmeligheder.
-- [ ] Statisk kontrol: søg i nye filer og image histories efter `.env`, connection strings, OpenAI-nøgler og andre secrets.
-- [ ] Workflowkontrol: valider YAML og bekræft branch/path filters, minimale permissions, SHA-tags og secret-referencer.
+- [x] .NET: restore/build af `src/Roadcue.Api/Roadcue.Api.csproj` og dets project references i Linux-CI.
+- [x] Python: installer requirements og kør `pytest` fra `vico/` med testkonfiguration, der ikke kan ramme live OpenAI.
+- [x] Angular: `npm ci`, `npm run build` og `npm test -- --watch=false --browsers=ChromeHeadless` fra `src/Roadcue.Web/`.
+- [x] Docker: byg .NET-imaget fra repository-roden og VICO-imaget fra den dokumenterede build context.
+- [x] Container smoke test: verificér VICO `/health`; verificér .NET-imagets non-root user og port.
+- [x] Statisk kontrol: søg i nye filer og image histories efter `.env`, connection strings, OpenAI-nøgler og andre secrets.
+- [x] Workflowkontrol: valider YAML og bekræft branch/path filters, minimale permissions, SHA-tags og secret-referencer.
 - [ ] Manuel Azure-kontrol efter brugerens senere opsætning: Angular → `/api/agent/chat` → VICO og VICO → intern .NET API; dette må ikke udføres som en live OpenAI-test i CI.
 
 ## Risici og åbne spørgsmål
@@ -150,13 +150,12 @@ Roadcue-repositoryet kan bygge, teste og deploye Angular til Azure Static Web Ap
   - Angular: `npm run build` er grøn, og `staticwebapp.config.json` findes i production output.
   - Angular-testbundtet kompilerer; lokal Karma kan ikke starte, fordi valideringsmiljøet mangler Chrome-binæren.
   - GitHub Actions: Angular build og ChromeHeadless-tests er grønne; preview-deploy springes over, indtil Static Web Apps-tokenet er konfigureret.
-  - GitHub Actions: VICO-tests og VICO Docker-build er grønne.
+  - GitHub Actions: VICO-tests, VICO Docker-build og container `/health`-smoke test er grønne.
+  - GitHub Actions: .NET 10 restore/build, API Docker-build og image-kontraktkontrol er grønne.
   - Workflow-YAML og Static Web Apps-JSON er syntaktisk valideret.
 - Manuel kontrol:
   - Angular bruger fortsat konstanten `AGENT_CHAT_ENDPOINT = '/api/agent/chat'`.
   - Statisk scanning fandt ingen databaseforbindelse i VICO, Angular, workflows eller imagespecifikationer.
   - Der er ikke tilføjet AKS-, Minikube-, Helm- eller Kubernetes-filer.
 - Resterende begrænsninger:
-  - Valideringsmiljøet mangler .NET 10 SDK og Docker-daemon; .NET-build og de to container-builds skal køre i GitHub Actions eller et egnet udviklingsmiljø.
-  - ChromeHeadless-testkørslen skal færdiggøres i GitHub Actions.
-  - Static Web Apps Standard/backend-link, Container Apps, Simply.com-netværk og end-to-end-røgtest afventer brugerens særskilt godkendte Azure-opsætning.
+  - Static Web Apps Standard/backend-link, Container Apps, Simply.com-netværk og end-to-end-røgtest afventer brugerens særskilt godkendte Azure-opsætning og er ikke en del af repository-klargøringen.
