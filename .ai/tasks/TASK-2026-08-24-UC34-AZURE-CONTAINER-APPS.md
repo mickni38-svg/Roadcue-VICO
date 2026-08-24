@@ -139,6 +139,7 @@ Roadcue-repositoryet kan bygge, teste og deploye Angular til Azure Static Web Ap
   - Container-images tagges med commit-SHA og deployes uafhængigt via OIDC-baseret Azure-login.
 - Afvigelser fra planen:
   - Tre komponent-workflows blev valgt frem for ét samlet CI-workflow for at bevare path-filtrering og uafhængig deployment.
+  - Linux-CI restore/build målrettes `src/Roadcue.Api/Roadcue.Api.csproj`, fordi `Roadcue.slnx` indeholder Visual Studio `Website`-entries til Angular og VICO; API-projektets project references bygger fortsat alle C#-lag.
   - Eksisterende Angular-importstier pegede på `./voice/`, selv om filerne ligger i `./features/voice/`; de blev rettet, fordi production build ellers fejlede.
   - Ingen Azure-ressourcer er oprettet, og ingen produktions-secrets er anvendt.
 
