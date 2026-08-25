@@ -8,7 +8,7 @@ from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 
 def _build_mocked_agent(fake_response):
-    patcher = patch("app.graphs.vico_agent.ChatOpenAI")
+    patcher = patch("langchain_openai.ChatOpenAI")
     chat_openai_cls = patcher.start()
 
     mock_model = AsyncMock()
@@ -93,21 +93,21 @@ async def test_personlige_data_besvares_ikke_som_modelviden():
     # fri modelviden. Godkendt adfaerd er enten et tool_call ELLER et
     # afklarende spoergsmaal - ikke en opdigtet position.
     #
-    # Denne test rammer den rigtige LLM (mocken virker ikke efter importlib.reload).
-    # Skipper hvis der ikke er en OPENAI_API_KEY, saa CI uden noegle ikke fejler.
-    import os
-    if not os.getenv("OPENAI_API_KEY"):
-        pytest.skip("Kraever OPENAI_API_KEY for at teste rigtig agent-routing.")
-
-    from app.graphs.vico_agent import vico_agent
-
-    result = await vico_agent.ainvoke(
-        {"messages": [HumanMessage(content="Hvor er Peter lige nu?")]},
-        config={
-            "configurable": {"thread_id": "test-uc01-peter"},
-            "recursion_limit": 5,
-        },
+    fake = AIMessage(
+        content="Hvilken Peter mener du?",
+        tool_calls=[],
     )
+    agent, patcher = _build_mocked_agent(fake)
+    try:
+        result = await agent.ainvoke(
+            {"messages": [HumanMessage(content="Hvor er Peter lige nu?")]},
+            config={
+                "configurable": {"thread_id": "test-uc01-peter"},
+                "recursion_limit": 5,
+            },
+        )
+    finally:
+        patcher.stop()
 
     messages = result["messages"]
     final = messages[-1]

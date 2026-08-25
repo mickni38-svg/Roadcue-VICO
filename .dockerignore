@@ -1,0 +1,15 @@
+.git
+.github
+.ai
+**/.env
+**/.env.*
+**/appsettings.Development.json
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+**/TestResults
+**/coverage
