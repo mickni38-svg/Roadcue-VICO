@@ -27,6 +27,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapGet( "/", () => Results.Ok( new { service = "Roadcue.Api", status = "running" } ) );
 app.MapGet( "/health", () => Results.Ok( "healthy" ) );
 
 using (var scope = app.Services.CreateScope())
