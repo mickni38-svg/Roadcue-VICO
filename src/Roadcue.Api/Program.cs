@@ -6,7 +6,6 @@ var builder = WebApplication.CreateBuilder( args );
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddHealthChecks();
 
 builder.Services.AddDbContext<RoadcueDbContext>( options =>
 {
@@ -28,7 +27,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.MapHealthChecks( "/health" );
+app.MapGet( "/health", () => Results.Ok( "healthy" ) );
 
 using (var scope = app.Services.CreateScope())
 {
