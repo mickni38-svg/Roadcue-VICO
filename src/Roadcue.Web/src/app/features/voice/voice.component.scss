@@ -1,0 +1,81 @@
+:host {
+  display: flex;
+  min-height: 100dvh;
+  align-items: center;
+  justify-content: center;
+  background: #0b0f14;
+  color: #f5f7fa;
+  font-family: system-ui, sans-serif;
+}
+
+.voice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 1rem;
+
+  &__emoji {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: clamp(6rem, 30vw, 14rem);
+    line-height: 1;
+    padding: 0;
+  }
+
+  &__emoji-glyph {
+    &[data-state='listening'] {
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    &[data-state='processing'] {
+      animation: spin 1.6s linear infinite;
+      display: inline-block;
+    }
+    &[data-state='speaking'] {
+      animation: bob 0.8s ease-in-out infinite;
+      display: inline-block;
+    }
+  }
+
+  &__label {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  &__answer {
+    max-width: 32rem;
+    opacity: 0.9;
+  }
+
+  &__error {
+    color: #ff8b8b;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}

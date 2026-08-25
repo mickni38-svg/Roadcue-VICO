@@ -1,0 +1,19 @@
+<main class="voice">
+  <button
+    type="button"
+    class="voice__emoji"
+    [attr.aria-label]="label()"
+    (click)="onTap()"
+  >
+    <span class="voice__emoji-glyph" [attr.data-state]="state()">{{
+      emoji()
+    }}</span>
+  </button>
+  <p class="voice__label">{{ label() }}</p>
+  @if (lastAnswer()) {
+    <p class="voice__answer">{{ lastAnswer() }}</p>
+  }
+  @if (errorMessage()) {
+    <p class="voice__error">{{ errorMessage() }}</p>
+  }
+</main>

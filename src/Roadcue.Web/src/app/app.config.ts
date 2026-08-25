@@ -12,11 +12,11 @@ import { routes } from './app.routes';
 import {
   SPEECH_RECOGNITION_ADAPTER,
   WebSpeechRecognitionAdapter,
-} from './voice/speech-recognition.adapter';
+} from './features/voice/speech-recognition.adapter';
 import {
   SPEECH_SYNTHESIS_ADAPTER,
   WebSpeechSynthesisAdapter,
-} from './voice/speech-synthesis.adapter';
+} from './features/voice/speech-synthesis.adapter';
 
 export const appConfig: ApplicationConfig = {
   providers: [

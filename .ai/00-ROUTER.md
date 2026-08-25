@@ -21,6 +21,7 @@ Brug denne fil til at vælge mindst mulig nødvendig kontekst. Læs ikke hele `.
 | Review | `prompts/REVIEW.md`, ændringerne, tests og relevante regler |
 | Dokumentation | `prompts/DOCUMENT.md` og de kilder dokumentet beskriver |
 | Arkitekturændring | Relevante arkitekturfiler, accepterede ADR'er og `ADR-TEMPLATE.md` |
+| Frontend / Angular (`src/Roadcue.Web`) | `ARCHITECTURE-FRONTEND.md` + berørt feature-mappe under `src/app/features/` |
 
 ## Problemformulering og kravspecifikation
 

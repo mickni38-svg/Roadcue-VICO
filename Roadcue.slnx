@@ -5,7 +5,14 @@
     <File Path=".ai/Roadcue.AI.Context/UC-03-VAELGE-DATAKILDER-OG-TOOLS-AUTOMATISK.md" />
     <File Path=".ai/Roadcue.AI.Context/UC-04-HAANDTERE-MANGLENDE-ELLER-USIKKER-VIDEN.md" />
   </Folder>
-  <Folder Name="/Voice/">
+  <Folder Name="/Tasks/">
+    <File Path=".ai/tasks/TASK-2026-08-21-UC01-UDVID-ACCEPTKRITERIER.md" />
+    <File Path=".ai/tasks/TASK-2026-08-21-UC02-SAMMENHAENGENDE-SAMTALE.md" />
+    <File Path=".ai/tasks/TASK-2026-08-22-UC03-VAELGE-DATAKILDER-OG-TOOLS.md" />
+    <File Path=".ai/tasks/TASK-2026-08-22-UC04-HAANDTERE-MANGLENDE-VIDEN.md" />
+    <File Path=".ai/tasks/TASK-2026-08-23-UC26-VOICE-ANGULAR-UI.md" />
+  </Folder>
+  <Folder Name="/Voice-27-29/">
     <File Path=".ai/features/voice/UC-26-BETJEN-VICO-MED-STEMMEN.md" />
     <File Path=".ai/features/voice/UC-27-FAA-RELEVANTE-DELE-AF-APPEN-LAEST-OP.md" />
     <File Path=".ai/features/voice/UC-28-BRUG-VICO-SOM-COMPANION.md" />
