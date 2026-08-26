@@ -86,8 +86,14 @@ jobs:
           ACR_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
           RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
           CONTAINER_APP: ${{ vars.AZURE_VICO_APP_NAME }}
-        run: >-
-          az containerapp update
-          --name "$CONTAINER_APP"
-          --resource-group "$RESOURCE_GROUP"
-          --image "$ACR_NAME.azurecr.io/roadcue-vico:$IMAGE_TAG"
+          ROADCUE_API_BASE_URL: ${{ vars.ROADCUE_API_BASE_URL }}
+        run: |
+          if [ -z "$ROADCUE_API_BASE_URL" ]; then
+            echo "ROADCUE_API_BASE_URL variable is not configured for this environment." >&2
+            exit 1
+          fi
+          az containerapp update \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --image "$ACR_NAME.azurecr.io/roadcue-vico:$IMAGE_TAG" \
+            --set-env-vars "ROADCUE_API_BASE_URL=$ROADCUE_API_BASE_URL"
