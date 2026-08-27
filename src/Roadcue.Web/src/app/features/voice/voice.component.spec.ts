@@ -186,8 +186,23 @@ describe('VoiceComponent (wake-word flow)', () => {
     recognition.emit('vico hvad er klokken', true);
     expect(cmp.state()).toBe('listening');
     httpMock.expectNone(AGENT_CHAT_ENDPOINT);
-    // Only SKIFTER completes the utterance.
-    recognition.emit('hvad er klokken skifter', true);
+    // Only SKIFTER completes the utterance – arrives in a later final segment.
+    recognition.emit('skifter', true);
+    await flush();
+    const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
+    expect(req.request.body.message).toBe('hvad er klokken');
+    req.flush({ answer: 'ok', thread_id: 't' });
+    await flush();
+  });
+
+  it('accumulates message across separate final segments (SKIFTER in own segment)', async () => {
+    const cmp = build();
+    await cmp.onTap();
+    recognition.emit('vico', true); // wake in its own final
+    expect(cmp.state()).toBe('listening');
+    recognition.emit('hvad er klokken', true); // body in its own final
+    httpMock.expectNone(AGENT_CHAT_ENDPOINT);
+    recognition.emit('skifter', true); // end phrase in its own final
     await flush();
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
     expect(req.request.body.message).toBe('hvad er klokken');

@@ -51,7 +51,8 @@ export class VoiceComponent implements OnDestroy {
 
   private session: ContinuousRecognitionSession | null = null;
   private capturing = false;
-  private capturedText = '';
+  private finalizedText = '';
+  private interimText = '';
   private busy = false; // true while sending to backend or speaking
 
   async onTap(): Promise<void> {
@@ -81,8 +82,7 @@ export class VoiceComponent implements OnDestroy {
   }
 
   private startSession(): void {
-    this.capturing = false;
-    this.capturedText = '';
+    this.resetBuffers();
     this.state.set('waiting-wake');
     this.session = this.recognition.listen({
       onTranscript: (transcript, isFinal) =>
@@ -98,46 +98,52 @@ export class VoiceComponent implements OnDestroy {
   private stopSession(): void {
     this.session?.stop();
     this.session = null;
+    this.resetBuffers();
+  }
+
+  private resetBuffers(): void {
     this.capturing = false;
-    this.capturedText = '';
+    this.finalizedText = '';
+    this.interimText = '';
   }
 
   private handleTranscript(transcript: string, isFinal: boolean): void {
     if (this.busy) return;
 
-    const upper = transcript.toUpperCase();
-    const wake = findFirstWordIndex(upper, WAKE_WORDS);
-    const end = findFirstWordIndex(upper, [END_WORD]);
-
-    // Decide where the payload starts:
-    //  - if the current segment contains a wake word, always skip past it
-    //    (handles the case where the recognizer re-emits the whole utterance
-    //    including the wake word).
-    //  - otherwise, only continue capturing if we already started.
-    let start: number;
-    if (wake !== -1) {
-      start = wake.after;
-      if (!this.capturing) {
-        this.capturing = true;
-        this.state.set('listening');
-      }
-    } else if (this.capturing) {
-      start = 0;
+    // Web Speech on iOS Safari emits each pause as a separate final segment.
+    // Accumulate all finals since the wake word and keep the latest interim
+    // as a tentative tail so we can react the moment SKIFTER appears.
+    if (isFinal) {
+      this.finalizedText = (this.finalizedText + ' ' + transcript).trim();
+      this.interimText = '';
     } else {
-      return;
+      this.interimText = transcript.trim();
     }
 
-    const skifterSaid = end !== -1 && end.before > start;
-    const bodyEnd = skifterSaid ? end.before : transcript.length;
-    this.capturedText = transcript.slice(start, bodyEnd).trim();
+    const full = (this.finalizedText + ' ' + this.interimText).trim();
+    if (!full) return;
+    const upper = full.toUpperCase();
 
-    // Only "SKIFTER" ends the capture. iOS Safari flags every pause as final,
-    // so acting on isFinal would cut the user off mid-sentence.
-    if (!skifterSaid) return;
+    const wake = findFirstWordIndex(upper, WAKE_WORDS);
+    if (!this.capturing) {
+      if (wake === -1) return;
+      this.capturing = true;
+      this.state.set('listening');
+    }
 
-    const message = this.capturedText;
-    this.capturing = false;
-    this.capturedText = '';
+    // Isolate the body that follows the wake word. If wake was not found in
+    // this cumulative buffer (e.g. it was trimmed) we treat the whole buffer
+    // as body.
+    const wakeAfter = wake !== -1 ? wake.after : 0;
+    const bodyUpper = upper.slice(wakeAfter);
+    const endInBody = findFirstWordIndex(bodyUpper, [END_WORD]);
+    if (endInBody === -1) return; // Only SKIFTER ends capture.
+
+    const message = full
+      .slice(wakeAfter, wakeAfter + endInBody.before)
+      .trim();
+    this.resetBuffers();
+
     if (!message) {
       this.state.set('waiting-wake');
       return;
