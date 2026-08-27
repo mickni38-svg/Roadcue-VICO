@@ -6,31 +6,54 @@ import {
 } from '@angular/common/http/testing';
 import { VoiceComponent } from './voice.component';
 import { AGENT_CHAT_ENDPOINT } from './agent-chat.service';
-import { SPEECH_RECOGNITION_ADAPTER } from './speech-recognition.adapter';
+import {
+  ContinuousRecognitionHandlers,
+  ContinuousRecognitionSession,
+  SPEECH_RECOGNITION_ADAPTER,
+} from './speech-recognition.adapter';
 import { SPEECH_SYNTHESIS_ADAPTER } from './speech-synthesis.adapter';
 
 class FakeRecognition {
-  transcript = 'hej vico';
-  shouldReject: unknown = null;
+  handlers: ContinuousRecognitionHandlers | null = null;
   stopped = false;
-  start(): Promise<string> {
-    if (this.shouldReject) {
-      return Promise.reject(this.shouldReject);
-    }
-    return Promise.resolve(this.transcript);
-  }
-  stop(): void {
-    this.stopped = true;
-  }
+  sessions = 0;
+
   isSupported(): boolean {
     return true;
+  }
+
+  listen(handlers: ContinuousRecognitionHandlers): ContinuousRecognitionSession {
+    this.handlers = handlers;
+    this.stopped = false;
+    this.sessions++;
+    return {
+      stop: () => {
+        this.stopped = true;
+      },
+    };
+  }
+
+  emit(transcript: string, isFinal = true): void {
+    this.handlers?.onTranscript(transcript, isFinal);
+  }
+
+  emitError(err: string): void {
+    this.handlers?.onError?.(err);
   }
 }
 
 class FakeSynthesis {
   spoken: string[] = [];
   cancelled = false;
+  primed = 0;
   shouldReject: unknown = null;
+
+  isSupported(): boolean {
+    return true;
+  }
+  prime(): void {
+    this.primed++;
+  }
   speak(text: string): Promise<void> {
     this.spoken.push(text);
     if (this.shouldReject) {
@@ -41,9 +64,6 @@ class FakeSynthesis {
   cancel(): void {
     this.cancelled = true;
   }
-  isSupported(): boolean {
-    return true;
-  }
 }
 
 async function flush(): Promise<void> {
@@ -52,7 +72,7 @@ async function flush(): Promise<void> {
   await Promise.resolve();
 }
 
-describe('VoiceComponent', () => {
+describe('VoiceComponent (wake-word flow)', () => {
   let recognition: FakeRecognition;
   let synthesis: FakeSynthesis;
   let httpMock: HttpTestingController;
@@ -78,111 +98,138 @@ describe('VoiceComponent', () => {
     TestBed.resetTestingModule();
   });
 
-  it('walks through idle → listening → processing → speaking → idle', async () => {
+  it('starts idle and enters waiting-wake after first tap (primes TTS)', async () => {
     const cmp = build();
     expect(cmp.state()).toBe('idle');
+    await cmp.onTap();
+    expect(cmp.state()).toBe('waiting-wake');
+    expect(synthesis.primed).toBe(1);
+    expect(recognition.sessions).toBe(1);
+  });
 
+  it('ignores transcripts without a wake word', async () => {
+    const cmp = build();
+    await cmp.onTap();
+    recognition.emit('bare noget snak uden aktivering', true);
+    expect(cmp.state()).toBe('waiting-wake');
+    httpMock.expectNone(AGENT_CHAT_ENDPOINT);
+  });
+
+  it('captures message between wake word and SKIFTER, then processes', async () => {
+    const cmp = build();
+    await cmp.onTap();
     let resolveSpeak!: () => void;
     synthesis.speak = (text: string) => {
       synthesis.spoken.push(text);
       return new Promise<void>((r) => (resolveSpeak = r));
     };
-
-    const tap = cmp.onTap();
+    recognition.emit('Hej VICO vis mig chaufførerne SKIFTER', true);
     await flush();
-    // recognition resolved; state moved to processing
     expect(cmp.state()).toBe('processing');
-
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
     expect(req.request.body).toEqual({
-      message: 'hej vico',
+      message: 'vis mig chaufførerne',
       thread_id: null,
     });
-    req.flush({ answer: 'Hej tilbage', thread_id: 't1' });
+    req.flush({ answer: 'Her er de', thread_id: 't1' });
     await flush();
     expect(cmp.state()).toBe('speaking');
-    expect(synthesis.spoken).toEqual(['Hej tilbage']);
-
+    expect(synthesis.spoken).toEqual(['Her er de']);
     resolveSpeak();
-    await tap;
-    expect(cmp.state()).toBe('idle');
+    await flush();
+    expect(cmp.state()).toBe('waiting-wake');
+  });
+
+  it('accepts VIGGO and VIGO as wake words', async () => {
+    const cmp = build();
+    await cmp.onTap();
+    recognition.emit('viggo hvad er klokken skifter', true);
+    await flush();
+    const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
+    expect(req.request.body.message).toBe('hvad er klokken');
+    req.flush({ answer: 'ok', thread_id: 't' });
+    await flush();
+
+    recognition.emit('vigo tak skifter', true);
+    await flush();
+    const req2 = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
+    expect(req2.request.body.message).toBe('tak');
+    req2.flush({ answer: 'velbekomme', thread_id: 't' });
+    await flush();
   });
 
   it('reuses thread_id on the follow-up utterance', async () => {
     const cmp = build();
-    const first = cmp.onTap();
+    await cmp.onTap();
+    recognition.emit('vico første besked skifter', true);
     await flush();
     httpMock
       .expectOne(AGENT_CHAT_ENDPOINT)
-      .flush({ answer: 'ok', thread_id: 't-42' });
-    await first;
+      .flush({ answer: 'a', thread_id: 't-42' });
+    await flush();
 
-    recognition.transcript = 'anden ytring';
-    const second = cmp.onTap();
+    recognition.emit('vico anden besked skifter', true);
     await flush();
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
     expect(req.request.body).toEqual({
-      message: 'anden ytring',
+      message: 'anden besked',
       thread_id: 't-42',
     });
-    req.flush({ answer: 'igen', thread_id: 't-42' });
-    await second;
+    req.flush({ answer: 'b', thread_id: 't-42' });
+    await flush();
   });
 
-  it('does not send HTTP when transcript is empty', async () => {
+  it('sends the utterance when the final result arrives without SKIFTER', async () => {
     const cmp = build();
-    recognition.transcript = '   ';
     await cmp.onTap();
-    httpMock.expectNone(AGENT_CHAT_ENDPOINT);
-    expect(cmp.state()).toBe('error');
-  });
-
-  it('preserves thread_id when HTTP fails', async () => {
-    const cmp = build();
-    const first = cmp.onTap();
-    await flush();
-    httpMock
-      .expectOne(AGENT_CHAT_ENDPOINT)
-      .flush({ answer: 'ok', thread_id: 't-x' });
-    await first;
-
-    const second = cmp.onTap();
-    await flush();
-    httpMock
-      .expectOne(AGENT_CHAT_ENDPOINT)
-      .flush('boom', { status: 500, statusText: 'err' });
-    await second;
-    expect(cmp.state()).toBe('error');
-
-    // The service still holds t-x; verify by triggering another call
-    recognition.transcript = 'tredje';
-    const third = cmp.onTap();
+    // Interim keeps updating; final without SKIFTER should still be sent.
+    recognition.emit('vico hvad er klokken', false);
+    expect(cmp.state()).toBe('listening');
+    recognition.emit('vico hvad er klokken', true);
     await flush();
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
-    expect(req.request.body.thread_id).toBe('t-x');
-    req.flush({ answer: 'ok', thread_id: 't-x' });
-    await third;
+    expect(req.request.body.message).toBe('hvad er klokken');
+    req.flush({ answer: 'ok', thread_id: 't' });
+    await flush();
   });
 
-  it('cancels speech synthesis when tapped while speaking', async () => {
+  it('cancels speech and returns to waiting-wake when tapped while speaking', async () => {
     const cmp = build();
+    await cmp.onTap();
     let resolveSpeak!: () => void;
     synthesis.speak = (text: string) => {
       synthesis.spoken.push(text);
       return new Promise<void>((r) => (resolveSpeak = r));
     };
-    const tap = cmp.onTap();
+    recognition.emit('vico hej skifter', true);
     await flush();
     httpMock
       .expectOne(AGENT_CHAT_ENDPOINT)
-      .flush({ answer: 'noget langt', thread_id: 't1' });
+      .flush({ answer: 'lang tekst', thread_id: 't' });
     await flush();
     expect(cmp.state()).toBe('speaking');
 
     await cmp.onTap();
     expect(synthesis.cancelled).toBeTrue();
-    expect(cmp.state()).toBe('idle');
+    expect(cmp.state()).toBe('waiting-wake');
     resolveSpeak();
-    await tap;
+    await flush();
+  });
+
+  it('stops session and returns to idle when tapped while waiting', async () => {
+    const cmp = build();
+    await cmp.onTap();
+    expect(cmp.state()).toBe('waiting-wake');
+    await cmp.onTap();
+    expect(cmp.state()).toBe('idle');
+    expect(recognition.stopped).toBeTrue();
+  });
+
+  it('shows error and stops session on recognition error', async () => {
+    const cmp = build();
+    await cmp.onTap();
+    recognition.emitError('audio-capture');
+    expect(cmp.state()).toBe('error');
+    expect(recognition.stopped).toBeTrue();
   });
 });
