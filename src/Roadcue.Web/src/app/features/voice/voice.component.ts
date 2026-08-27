@@ -131,9 +131,9 @@ export class VoiceComponent implements OnDestroy {
     const bodyEnd = skifterSaid ? end.before : transcript.length;
     this.capturedText = transcript.slice(start, bodyEnd).trim();
 
-    const shouldProcess =
-      skifterSaid || (isFinal && this.capturing && this.capturedText);
-    if (!shouldProcess) return;
+    // Only "SKIFTER" ends the capture. iOS Safari flags every pause as final,
+    // so acting on isFinal would cut the user off mid-sentence.
+    if (!skifterSaid) return;
 
     const message = this.capturedText;
     this.capturing = false;

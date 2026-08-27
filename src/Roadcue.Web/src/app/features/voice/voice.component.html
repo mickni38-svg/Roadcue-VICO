@@ -1,13 +1,37 @@
 <main class="voice">
   <button
     type="button"
-    class="voice__emoji"
+    class="voice__face-btn"
     [attr.aria-label]="label()"
     (click)="onTap()"
   >
-    <span class="voice__emoji-glyph" [attr.data-state]="state()">{{
-      emoji()
-    }}</span>
+    <svg
+      class="face"
+      [attr.data-state]="state()"
+      viewBox="0 0 120 120"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <circle class="face__head" cx="60" cy="60" r="54" />
+      <g class="face__eye face__eye--left">
+        <ellipse cx="42" cy="52" rx="5" ry="8" />
+      </g>
+      <g class="face__eye face__eye--right">
+        <ellipse cx="78" cy="52" rx="5" ry="8" />
+      </g>
+      <path
+        class="face__mouth face__mouth--smile"
+        d="M 40 82 Q 60 96 80 82"
+        fill="none"
+      />
+      <ellipse
+        class="face__mouth face__mouth--speak"
+        cx="60"
+        cy="86"
+        rx="10"
+        ry="6"
+      />
+    </svg>
   </button>
   <p class="voice__label">{{ label() }}</p>
   @if (lastAnswer()) {

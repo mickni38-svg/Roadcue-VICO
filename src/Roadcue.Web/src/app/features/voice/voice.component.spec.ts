@@ -179,13 +179,15 @@ describe('VoiceComponent (wake-word flow)', () => {
     await flush();
   });
 
-  it('sends the utterance when the final result arrives without SKIFTER', async () => {
+  it('does NOT send when final arrives without SKIFTER (iOS pauses become final)', async () => {
     const cmp = build();
     await cmp.onTap();
-    // Interim keeps updating; final without SKIFTER should still be sent.
-    recognition.emit('vico hvad er klokken', false);
-    expect(cmp.state()).toBe('listening');
+    // iOS Safari marks each pause as final; that must not end the capture.
     recognition.emit('vico hvad er klokken', true);
+    expect(cmp.state()).toBe('listening');
+    httpMock.expectNone(AGENT_CHAT_ENDPOINT);
+    // Only SKIFTER completes the utterance.
+    recognition.emit('hvad er klokken skifter', true);
     await flush();
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
     expect(req.request.body.message).toBe('hvad er klokken');

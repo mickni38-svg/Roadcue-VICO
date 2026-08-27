@@ -16,31 +16,13 @@
   text-align: center;
   padding: 1rem;
 
-  &__emoji {
+  &__face-btn {
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: clamp(6rem, 30vw, 14rem);
-    line-height: 1;
     padding: 0;
-  }
-
-  &__emoji-glyph {
-    &[data-state='waiting-wake'] {
-      animation: breathe 2.4s ease-in-out infinite;
-      display: inline-block;
-    }
-    &[data-state='listening'] {
-      animation: pulse 1.2s ease-in-out infinite;
-    }
-    &[data-state='processing'] {
-      animation: spin 1.6s linear infinite;
-      display: inline-block;
-    }
-    &[data-state='speaking'] {
-      animation: bob 0.8s ease-in-out infinite;
-      display: inline-block;
-    }
+    width: clamp(10rem, 60vw, 22rem);
+    height: clamp(10rem, 60vw, 22rem);
   }
 
   &__label {
@@ -58,29 +40,115 @@
   }
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
+.face {
+  width: 100%;
+  height: 100%;
+  display: block;
+
+  &__head {
+    fill: #ffd54f;
+    stroke: #b8860b;
+    stroke-width: 2;
+    transform-origin: 60px 60px;
+    animation: breathe 3.6s ease-in-out infinite;
   }
-  50% {
-    transform: scale(1.08);
+
+  &__eye {
+    fill: #1c1c1c;
+    transform-origin: center;
+    // Blink: rapid vertical squash every ~4s. Keeps her feeling alive.
+    animation: blink 4.2s ease-in-out infinite;
+  }
+  &__eye--right {
+    animation-delay: 0.08s;
+  }
+
+  &__mouth {
+    stroke: #1c1c1c;
+    stroke-width: 3;
+    stroke-linecap: round;
+    fill: none;
+  }
+
+  // Only one mouth shape is visible per state.
+  &__mouth--smile {
+    display: block;
+  }
+  &__mouth--speak {
+    display: none;
+    fill: #4a2c2a;
+    stroke: #1c1c1c;
+    transform-origin: 60px 86px;
+  }
+
+  // ---------------- state overrides ----------------
+
+  &[data-state='waiting-wake'] {
+    .face__head {
+      animation: breathe 3.6s ease-in-out infinite;
+      filter: drop-shadow(0 0 12px rgba(120, 200, 255, 0.55));
+    }
+  }
+
+  &[data-state='listening'] {
+    .face__eye {
+      // Slightly wider open + a bit slower blink while she pays attention.
+      transform: scaleY(1.15);
+      animation: blink 5s ease-in-out infinite;
+    }
+    .face__head {
+      filter: drop-shadow(0 0 14px rgba(255, 213, 79, 0.7));
+    }
+  }
+
+  &[data-state='processing'] {
+    .face__eye {
+      animation: blink 1.8s ease-in-out infinite;
+    }
+    .face__mouth--smile {
+      d: path('M 42 84 L 78 84');
+    }
+  }
+
+  &[data-state='speaking'] {
+    .face__mouth--smile {
+      display: none;
+    }
+    .face__mouth--speak {
+      display: block;
+      animation: talk 0.32s ease-in-out infinite;
+    }
+  }
+
+  &[data-state='error'] {
+    .face__head {
+      fill: #f0a0a0;
+    }
+    .face__mouth--smile {
+      d: path('M 40 92 Q 60 78 80 92');
+    }
   }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@keyframes blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  94%,
+  98% {
+    transform: scaleY(0.08);
   }
 }
 
-@keyframes bob {
+@keyframes talk {
   0%,
   100% {
-    transform: translateY(0);
+    transform: scaleY(0.35);
   }
   50% {
-    transform: translateY(-6px);
+    transform: scaleY(1.2);
   }
 }
 
@@ -88,10 +156,8 @@
   0%,
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 0 rgba(120, 200, 255, 0));
   }
   50% {
-    transform: scale(1.04);
-    filter: drop-shadow(0 0 14px rgba(120, 200, 255, 0.55));
+    transform: scale(1.03);
   }
 }
