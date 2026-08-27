@@ -19,7 +19,7 @@ class RoadcueApiClient:
         # – svarer til "using" i C#.
         async with httpx.AsyncClient(
             base_url=self._base_url,
-            timeout=10.0,  # Sekunder før kaldet opgives
+            timeout=30.0,  # Sekunder før kaldet opgives (tåler cold start af C#-API'et)
         ) as client:
             response = await client.get("/api/drivers")
             # raise_for_status kaster en exception ved HTTP 4xx/5xx
@@ -35,7 +35,7 @@ class RoadcueApiClient:
     ) -> list[dict[str, Any]]:
         async with httpx.AsyncClient(
             base_url=self._base_url,
-            timeout=10.0,
+            timeout=30.0,  # Sekunder før kaldet opgives (tåler cold start af C#-API'et)
         ) as client:
             # f-string interpolation – svarer til $"-strenge i C#.
             response = await client.get(

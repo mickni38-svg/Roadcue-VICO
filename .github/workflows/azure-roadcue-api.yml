@@ -74,3 +74,5 @@ jobs:
           --name "$CONTAINER_APP"
           --resource-group "$RESOURCE_GROUP"
           --image "$ACR_NAME.azurecr.io/roadcue-api:$IMAGE_TAG"
+          --min-replicas 1
+          --max-replicas 10
