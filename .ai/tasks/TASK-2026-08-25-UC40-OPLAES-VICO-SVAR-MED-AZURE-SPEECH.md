@@ -296,3 +296,45 @@ Azure-nøgler forlader aldrig backend.
   - Ingen iOS-verifikation endnu; `prime()` afspiller en kort
 	stille lyd for at frigøre audio-kanalen, men bør testes på
 	rigtig enhed.
+
+## Prod-tilpasning (opfølgning i samme task)
+
+Efter lokal verificering blev det tydeligt at variant A brød prod-
+routing i UC-34: Static Web Apps videresender kun `/api/*` til
+VICO Container App, mens Roadcue.Api har intern ingress. Derfor
+kunne Angular ikke nå `/api/speech/tts` i prod.
+
+**Løsning (minimal, tro mod UC-34-arkitekturen):** VICO fungerer
+som tynd forwarder for `/api/speech/tts` — samme mønster som
+`/api/agent/chat`-aliaset. Angular kalder samme relative sti i
+lokal og prod; VICO videresender body til `ROADCUE_API_BASE_URL`
+og streamer MP3'en tilbage. Ingen ny ingress, ingen CORS, ingen
+Azure-nøgle i VICO.
+
+- Ændrede filer:
+  - `vico/app/main.py` — nye routes `POST /api/speech/tts` og
+	`POST /speech/tts` (sidstnævnte fordi Angular dev-proxy
+	rewriter `^/api` → `""`). Forwarder via `httpx.AsyncClient`
+	til `settings.roadcue_api_base_url + "/api/speech/tts"`.
+	Returnerer upstream-body + Content-Type uændret. 502 ved
+	netværksfejl.
+  - `src/Roadcue.Web/proxy.conf.json` — fjernet specifik
+	`/api/speech` → Roadcue.Api-regel. Al `/api/*` går nu via
+	VICO (samme sti som prod).
+  - `vico/tests/test_uc40_speech_proxy.py` — 2 nye pytest-
+	tests: forward returnerer 200 + audio/mpeg med body videre-
+	sendt, og 502 ved upstream-fejl. Mocker `httpx.AsyncClient`,
+	kalder aldrig Azure eller Roadcue.Api.
+
+- Validering:
+  - `pytest` for de nye tests + eksisterende Azure-chat-alias
+	→ 3/3 grønne.
+  - Roadcue.Api-koden er uændret; alle 10 xUnit-tests forbliver
+	grønne.
+- Prod-forudsætninger (skal være opfyldt i Azure):
+  - Roadcue.Api Container App har `AzureSpeech__Key` og
+	`AzureSpeech__Region` som secrets (brugeren bekræftede at
+	dette allerede er sat op).
+  - VICO Container App bruger `ROADCUE_API_BASE_URL` der peger
+	på Roadcue.Api's interne ingress (fx `http://roadcue-api`).
+
