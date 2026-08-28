@@ -21,7 +21,9 @@ import {
   VOICE_LABEL,
   VoiceState,
   WAKE_WORDS,
-  END_WORD,
+  END_WORDS,
+  CONVERSATION_IDLE_MS,
+  WAKE_ACK,
 } from './voice-state';
 
 @Component({
@@ -54,6 +56,7 @@ export class VoiceComponent implements OnDestroy {
   private finalizedText = '';
   private interimText = '';
   private busy = false; // true while sending to backend or speaking
+  private conversationTimer: ReturnType<typeof setTimeout> | null = null;
 
   async onTap(): Promise<void> {
     const current = this.state();
@@ -79,6 +82,7 @@ export class VoiceComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopSession();
+    this.clearConversationTimer();
   }
 
   private startSession(): void {
@@ -98,13 +102,50 @@ export class VoiceComponent implements OnDestroy {
   private stopSession(): void {
     this.session?.stop();
     this.session = null;
+    this.clearConversationTimer();
     this.resetBuffers();
   }
 
-  private resetBuffers(): void {
-    this.capturing = false;
+  private resetBuffers(keepCapturing = false): void {
+    if (!keepCapturing) this.capturing = false;
     this.finalizedText = '';
     this.interimText = '';
+  }
+
+  private armConversationTimer(): void {
+    this.clearConversationTimer();
+    this.conversationTimer = setTimeout(() => {
+      this.conversationTimer = null;
+      this.capturing = false;
+      this.resetBuffers();
+      // Only fall back to waiting-wake if we're still in an idle
+      // conversational state (avoid overriding an active exchange).
+      if (!this.busy && this.state() === 'listening') {
+        this.state.set('waiting-wake');
+      }
+    }, CONVERSATION_IDLE_MS);
+  }
+
+  private clearConversationTimer(): void {
+    if (this.conversationTimer !== null) {
+      clearTimeout(this.conversationTimer);
+      this.conversationTimer = null;
+    }
+  }
+
+  /**
+   * Fire-and-forget short acknowledgement ("Ja") when VICO hears its
+   * wake word. Does not toggle {@link busy} so the user can start
+   * talking immediately after the ack.
+   */
+  private acknowledgeWake(): void {
+    try {
+      void this.synthesis.speak(WAKE_ACK).catch(() => {
+        /* ignore – best-effort ack */
+      });
+    } catch {
+      /* ignore */
+    }
   }
 
   private handleTranscript(transcript: string, isFinal: boolean): void {
@@ -129,23 +170,33 @@ export class VoiceComponent implements OnDestroy {
       if (wake === -1) return;
       this.capturing = true;
       this.state.set('listening');
+      this.acknowledgeWake();
+      this.clearConversationTimer();
+    } else if (wake !== -1 && upper.slice(0, wake.before).trim() === '') {
+      // Already in conversation mode; user re-invoked "VICO" as a lone
+      // attention word. Acknowledge again and treat the wake as the new
+      // start of the body.
+      this.acknowledgeWake();
     }
 
-    // Isolate the body that follows the wake word. If wake was not found in
-    // this cumulative buffer (e.g. it was trimmed) we treat the whole buffer
-    // as body.
+    // Isolate the body that follows the wake word (if any). In
+    // conversation mode the buffer may not contain a wake word at all,
+    // in which case the whole buffer is the body.
     const wakeAfter = wake !== -1 ? wake.after : 0;
     const bodyUpper = upper.slice(wakeAfter);
-    const endInBody = findFirstWordIndex(bodyUpper, [END_WORD]);
-    if (endInBody === -1) return; // Only SKIFTER ends capture.
+    const endInBody = findFirstWordIndex(bodyUpper, END_WORDS);
+    if (endInBody === -1) return; // Only SKIFTER (or variants) ends capture.
 
     const message = full
       .slice(wakeAfter, wakeAfter + endInBody.before)
       .trim();
-    this.resetBuffers();
+    // Keep capturing=true so the user can continue the conversation
+    // without repeating the wake word.
+    this.resetBuffers(true);
 
     if (!message) {
-      this.state.set('waiting-wake');
+      this.state.set('listening');
+      this.armConversationTimer();
       return;
     }
     void this.processMessage(message);
@@ -161,13 +212,17 @@ export class VoiceComponent implements OnDestroy {
       this.lastAnswer.set(answer);
     } catch (err) {
       this.errorMessage.set(this.describe(err, 'Der opstod en fejl.'));
-      this.state.set('waiting-wake');
+      this.state.set('listening');
+      this.capturing = true;
+      this.armConversationTimer();
       this.busy = false;
       return;
     }
 
     if (!answer) {
-      this.state.set('waiting-wake');
+      this.state.set('listening');
+      this.capturing = true;
+      this.armConversationTimer();
       this.busy = false;
       return;
     }
@@ -178,7 +233,11 @@ export class VoiceComponent implements OnDestroy {
     } catch {
       // Keep the answer in the UI, but return to listening state.
     }
-    this.state.set('waiting-wake');
+    // Stay hot: the user can continue without repeating "VICO" until
+    // the idle timer expires.
+    this.capturing = true;
+    this.state.set('listening');
+    this.armConversationTimer();
     this.busy = false;
   }
 

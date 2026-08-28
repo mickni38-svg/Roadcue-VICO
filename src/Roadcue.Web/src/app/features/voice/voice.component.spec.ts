@@ -134,10 +134,12 @@ describe('VoiceComponent (wake-word flow)', () => {
     req.flush({ answer: 'Her er de', thread_id: 't1' });
     await flush();
     expect(cmp.state()).toBe('speaking');
-    expect(synthesis.spoken).toEqual(['Her er de']);
+    // "Ja" is spoken as the wake acknowledgement before the answer.
+    expect(synthesis.spoken).toEqual(['Ja', 'Her er de']);
     resolveSpeak();
     await flush();
-    expect(cmp.state()).toBe('waiting-wake');
+    // After an answer VICO stays hot in listening (conversation mode).
+    expect(cmp.state()).toBe('listening');
   });
 
   it('accepts VIGGO and VIGO as wake words', async () => {
@@ -228,6 +230,7 @@ describe('VoiceComponent (wake-word flow)', () => {
 
     await cmp.onTap();
     expect(synthesis.cancelled).toBeTrue();
+    // Tapping while speaking cancels TTS and forces back to waiting-wake.
     expect(cmp.state()).toBe('waiting-wake');
     resolveSpeak();
     await flush();
