@@ -1,4 +1,4 @@
-using Microsoft.CognitiveServices.Speech;
+using AzureSpeechSdk = Microsoft.CognitiveServices.Speech;
 using Microsoft.Extensions.Logging;
 using Roadcue.Application.Speech;
 
@@ -51,7 +51,7 @@ public sealed class AzureSpeechSynthesizer : ISpeechSynthesizer
             return SpeechSynthesisResult.Failed( "azure_exception" );
         }
 
-        if (raw.Reason == ResultReason.SynthesizingAudioCompleted && raw.Audio is { Length: > 0 })
+        if (raw.Reason == AzureSpeechSdk.ResultReason.SynthesizingAudioCompleted && raw.Audio is { Length: > 0 })
         {
             return SpeechSynthesisResult.Ok( raw.Audio, Mp3ContentType, voice );
         }
