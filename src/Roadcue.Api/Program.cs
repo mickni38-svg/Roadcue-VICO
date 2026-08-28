@@ -15,6 +15,7 @@ builder.Services.AddDbContext<RoadcueDbContext>( options =>
 } );
 
 builder.Services.AddRoadcueDestinations( builder.Configuration );
+builder.Services.AddRoadcueSpeech( builder.Configuration );
 
 var app = builder.Build();
 

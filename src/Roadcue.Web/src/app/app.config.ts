@@ -5,7 +5,7 @@ import {
   isDevMode,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideServiceWorker } from '@angular/service-worker';
 
 import { routes } from './app.routes';
@@ -17,6 +17,7 @@ import {
   SPEECH_SYNTHESIS_ADAPTER,
   WebSpeechSynthesisAdapter,
 } from './features/voice/speech-synthesis.adapter';
+import { AzureSpeechSynthesisAdapter } from './features/voice/azure-speech-synthesis.adapter';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -34,7 +35,9 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: SPEECH_SYNTHESIS_ADAPTER,
-      useClass: WebSpeechSynthesisAdapter,
+      useFactory: (http: HttpClient) =>
+        new AzureSpeechSynthesisAdapter(http, new WebSpeechSynthesisAdapter()),
+      deps: [HttpClient],
     },
   ],
 };

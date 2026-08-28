@@ -1,4 +1,16 @@
 {
+  "/api/speech": {
+    "target": "http://localhost:5041",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/api/drivers": {
+    "target": "http://localhost:5041",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
   "/api": {
     "target": "http://127.0.0.1:8000",
     "secure": false,
