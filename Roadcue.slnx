@@ -1,5 +1,9 @@
 <Solution>
   <Folder Name="/conversations-01-04/">
+    <File Path=".ai/features/UC-26-BETJEN-VICO-MED-STEMMEN.md" />
+    <File Path=".ai/features/UC-27-FAA-RELEVANTE-DELE-AF-APPEN-LAEST-OP.md" />
+    <File Path=".ai/features/UC-28-BRUG-VICO-SOM-COMPANION.md" />
+    <File Path=".ai/features/UC-29-TILPAS-VICOS-PERSONLIGHED-OG-ADFAERD.md" />
     <File Path=".ai/Roadcue.AI.Context/UC-01-FOERE-EN-NATURLIG-AI-SAMTALE.md" />
     <File Path=".ai/Roadcue.AI.Context/UC-02-FOERE-EN-SAMMENHAENGENDE-SAMTALE.md" />
     <File Path=".ai/Roadcue.AI.Context/UC-03-VAELGE-DATAKILDER-OG-TOOLS-AUTOMATISK.md" />
