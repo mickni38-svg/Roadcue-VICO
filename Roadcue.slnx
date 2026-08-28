@@ -4,6 +4,7 @@
     <File Path=".ai/features/UC-27-FAA-RELEVANTE-DELE-AF-APPEN-LAEST-OP.md" />
     <File Path=".ai/features/UC-28-BRUG-VICO-SOM-COMPANION.md" />
     <File Path=".ai/features/UC-29-TILPAS-VICOS-PERSONLIGHED-OG-ADFAERD.md" />
+    <File Path=".ai/features/UC-35-ETABLER-OG-VEDLIGEHOLD-INTERN-TRUCK-RUTE.md" />
     <File Path=".ai/Roadcue.AI.Context/UC-01-FOERE-EN-NATURLIG-AI-SAMTALE.md" />
     <File Path=".ai/Roadcue.AI.Context/UC-02-FOERE-EN-SAMMENHAENGENDE-SAMTALE.md" />
     <File Path=".ai/Roadcue.AI.Context/UC-03-VAELGE-DATAKILDER-OG-TOOLS-AUTOMATISK.md" />
@@ -20,12 +21,6 @@
     <File Path=".ai/tasks/TASK-2026-08-22-UC03-VAELGE-DATAKILDER-OG-TOOLS.md" />
     <File Path=".ai/tasks/TASK-2026-08-22-UC04-HAANDTERE-MANGLENDE-VIDEN.md" />
     <File Path=".ai/tasks/TASK-2026-08-23-UC26-VOICE-ANGULAR-UI.md" />
-  </Folder>
-  <Folder Name="/Voice-27-29/">
-    <File Path=".ai/features/voice/UC-26-BETJEN-VICO-MED-STEMMEN.md" />
-    <File Path=".ai/features/voice/UC-27-FAA-RELEVANTE-DELE-AF-APPEN-LAEST-OP.md" />
-    <File Path=".ai/features/voice/UC-28-BRUG-VICO-SOM-COMPANION.md" />
-    <File Path=".ai/features/voice/UC-29-TILPAS-VICOS-PERSONLIGHED-OG-ADFAERD.md" />
   </Folder>
   <Project Path=".ai/Roadcue.AI.Context/Roadcue.AI.Context.csproj" Id="95aa9eec-3732-49b9-8011-aac60617ee30" />
   <Project Path="src/Roadcue.Api/Roadcue.Api.csproj" />
