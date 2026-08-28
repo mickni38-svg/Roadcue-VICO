@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Roadcue.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Roadcue.Infrastructure.Persistence;
 namespace Roadcue.Infrastructure.Migrations
 {
     [DbContext(typeof(RoadcueDbContext))]
-    partial class RoadcueDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260828114722_AddTripsAndDestination")]
+    partial class AddTripsAndDestination
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

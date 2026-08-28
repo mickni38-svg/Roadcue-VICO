@@ -20,16 +20,16 @@ from app.config import settings
 from app.core.prompts.vico_system_prompt import VICO_SYSTEM_PROMPT
 # Domæne-specifikke instruktioner for Friends-funktionaliteten
 from app.domains.friends.instructions import FRIENDS_INSTRUCTIONS
-# Tools som agenten kan kalde – svarende til metoder i et traditionelt API-lag
+from app.domains.destinations.instructions import DESTINATION_INSTRUCTIONS
 from app.tools.get_driver_friends import get_driver_friends
 from app.tools.get_drivers import get_drivers
+from app.tools.set_active_destination import set_active_destination
 
 
-# Listen over tools som agenten har adgang til.
-# LangGraph registrerer dem automatisk i grafen via bind_tools nedenfor.
 tools = [
     get_drivers,
     get_driver_friends,
+    set_active_destination,
 ]
 
 
@@ -54,6 +54,7 @@ SYSTEM_PROMPT = "\n\n".join(
     [
         VICO_SYSTEM_PROMPT,
         FRIENDS_INSTRUCTIONS,
+        DESTINATION_INSTRUCTIONS,
     ]
 )
 

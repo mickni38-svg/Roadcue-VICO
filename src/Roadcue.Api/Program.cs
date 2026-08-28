@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Roadcue.Infrastructure;
 using Roadcue.Infrastructure.Persistence;
 using Scalar.AspNetCore;
 
@@ -12,6 +13,8 @@ builder.Services.AddDbContext<RoadcueDbContext>( options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString( "Roadcue" ) );
 } );
+
+builder.Services.AddRoadcueDestinations( builder.Configuration );
 
 var app = builder.Build();
 

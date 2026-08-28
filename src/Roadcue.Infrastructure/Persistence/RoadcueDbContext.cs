@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Roadcue.Domain.Drivers;
 using Roadcue.Domain.Places;
+using Roadcue.Domain.Trips;
 
 namespace Roadcue.Infrastructure.Persistence;
 
@@ -19,4 +20,46 @@ public class RoadcueDbContext : DbContext
     public DbSet<Friendship> Friendships => Set<Friendship>();
 
     public DbSet<Place> Places => Set<Place>();
+
+    public DbSet<Trip> Trips => Set<Trip>();
+
+    protected override void OnModelCreating( ModelBuilder modelBuilder )
+    {
+        base.OnModelCreating( modelBuilder );
+
+        modelBuilder.Entity<Trip>( trip =>
+        {
+            trip.HasKey( t => t.Id );
+
+            trip.Property( t => t.Status )
+                .HasConversion<string>()
+                .HasMaxLength( 16 )
+                .IsRequired();
+
+            trip.Property( t => t.StartedAt ).IsRequired();
+            trip.Property( t => t.LastChangedAt ).IsRequired();
+
+            // Ejet type: destinationen lever kun sammen med sin Trip.
+            trip.OwnsOne( t => t.Destination, dest =>
+            {
+                dest.Property( d => d.Name ).HasMaxLength( 256 ).IsRequired();
+                dest.Property( d => d.Address ).HasMaxLength( 512 );
+                dest.Property( d => d.ProviderPlaceId ).HasMaxLength( 128 );
+                dest.Property( d => d.Latitude ).IsRequired();
+                dest.Property( d => d.Longitude ).IsRequired();
+                dest.Property( d => d.SetAt ).IsRequired();
+            } );
+
+            // Højst én aktiv Trip pr. driver – håndhæves som filtered
+            // unique index på DriverId når Status = 'Active'.
+            trip.HasIndex( t => new { t.DriverId, t.Status } )
+                .HasFilter( "[Status] = 'Active'" )
+                .IsUnique();
+
+            trip.HasOne( t => t.Driver )
+                .WithMany()
+                .HasForeignKey( t => t.DriverId )
+                .OnDelete( DeleteBehavior.Cascade );
+        } );
+    }
 }

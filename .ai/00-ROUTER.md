@@ -14,7 +14,7 @@ Brug denne fil til at vælge mindst mulig nødvendig kontekst. Læs ikke hele `.
 | Opgave | Læs |
 |---|---|
 | Ny use case eller ændring af use case | `features/README.md`, `features/USE-CASE-TEMPLATE.md` og kun relevante katalogfiler |
-| Implementér en kendt use case | Den angivne use case, relevante arkitekturfiler, relevante domæneregler og den aktive task |
+| Implementér en kendt use case | Den angivne use case, relevante arkitekturfiler, relevante domæneregler, relevante filer under `external-apis/` og den aktive task |
 | Fortsæt en godkendt task | Kun aktiv task, linket use case, berørte regler og de faktiske kodefiler |
 | Bug | `prompts/BUGFIX.md`, berørt kode/test og kun relevante regler |
 | Refaktorering | `prompts/REFACTOR.md`, berørt kode/test og relevante arkitekturgrænser |
@@ -22,6 +22,16 @@ Brug denne fil til at vælge mindst mulig nødvendig kontekst. Læs ikke hele `.
 | Dokumentation | `prompts/DOCUMENT.md` og de kilder dokumentet beskriver |
 | Arkitekturændring | Relevante arkitekturfiler, accepterede ADR'er og `ADR-TEMPLATE.md` |
 | Frontend / Angular (`src/Roadcue.Web`) | `ARCHITECTURE-FRONTEND.md` + berørt feature-mappe under `src/app/features/` |
+
+## Eksterne API'er
+
+Når en opgave bruger GPS, geocoding, routing, vejr, nearby places, trafik eller andre eksterne services:
+
+1. Læs `.ai/external-apis/README.md`.
+2. Læs kun de relevante provider-filer under `.ai/external-apis/`.
+3. Brug kun de providers og constraints, der er godkendt der.
+4. Introducér ikke en ny ekstern provider uden en eksplicit beslutning.
+5. Mock alle eksterne API-kald i automatiserede tests.
 
 ## Problemformulering og kravspecifikation
 
