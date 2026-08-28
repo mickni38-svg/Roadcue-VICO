@@ -57,6 +57,10 @@ export class VoiceComponent implements OnDestroy {
   private interimText = '';
   private busy = false; // true while sending to backend or speaking
   private conversationTimer: ReturnType<typeof setTimeout> | null = null;
+  // Guard so "Ja" is spoken at most once per buffer cycle. Otherwise
+  // every interim result that still contains the wake word would
+  // re-trigger the ack, which sounds like "Ja, Ja, Ja...".
+  private ackedForCurrentBuffer = false;
 
   async onTap(): Promise<void> {
     const current = this.state();
@@ -110,6 +114,7 @@ export class VoiceComponent implements OnDestroy {
     if (!keepCapturing) this.capturing = false;
     this.finalizedText = '';
     this.interimText = '';
+    this.ackedForCurrentBuffer = false;
   }
 
   private armConversationTimer(): void {
@@ -170,12 +175,19 @@ export class VoiceComponent implements OnDestroy {
       if (wake === -1) return;
       this.capturing = true;
       this.state.set('listening');
-      this.acknowledgeWake();
+      if (!this.ackedForCurrentBuffer) {
+        this.ackedForCurrentBuffer = true;
+        this.acknowledgeWake();
+      }
       this.clearConversationTimer();
-    } else if (wake !== -1 && upper.slice(0, wake.before).trim() === '') {
+    } else if (
+      wake !== -1 &&
+      upper.slice(0, wake.before).trim() === '' &&
+      !this.ackedForCurrentBuffer
+    ) {
       // Already in conversation mode; user re-invoked "VICO" as a lone
-      // attention word. Acknowledge again and treat the wake as the new
-      // start of the body.
+      // attention word. Acknowledge once for this buffer cycle.
+      this.ackedForCurrentBuffer = true;
       this.acknowledgeWake();
     }
 
