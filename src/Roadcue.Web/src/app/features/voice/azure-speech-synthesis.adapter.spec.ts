@@ -145,8 +145,8 @@ describe('AzureSpeechSynthesisAdapter', () => {
     const adapter = build();
 
     const completed = adapter.speak('Fallback tekst');
-    httpMock.expectOne(AZURE_TTS_ENDPOINT).flush(
-      { error: 'azure_unavailable' },
+    httpMock.expectOne(AZURE_TTS_ENDPOINT).error(
+      new ProgressEvent('error'),
       { status: 502, statusText: 'Bad Gateway' },
     );
 
