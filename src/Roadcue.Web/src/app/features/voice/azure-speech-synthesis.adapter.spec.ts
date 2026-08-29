@@ -1,4 +1,4 @@
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse, provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -100,9 +100,13 @@ describe('AzureSpeechSynthesisAdapter', () => {
     expect(fallback.primed).toBe(1);
 
     const completed = adapter.speak('Hej fra Jeppe');
-    httpMock
-      .expectOne(AZURE_TTS_ENDPOINT)
-      .flush(new Blob(['mp3'], { type: 'audio/mpeg' }));
+    httpMock.expectOne(AZURE_TTS_ENDPOINT).event(
+      new HttpResponse<Blob>({
+        body: new Blob(['mp3'], { type: 'audio/mpeg' }),
+        status: 200,
+        statusText: 'OK',
+      }),
+    );
     await flush();
 
     expect(created).toBe(1);
@@ -123,9 +127,13 @@ describe('AzureSpeechSynthesisAdapter', () => {
     const adapter = build();
 
     const completed = adapter.speak('Læs dette op');
-    httpMock
-      .expectOne(AZURE_TTS_ENDPOINT)
-      .flush(new Blob(['mp3'], { type: 'audio/mpeg' }));
+    httpMock.expectOne(AZURE_TTS_ENDPOINT).event(
+      new HttpResponse<Blob>({
+        body: new Blob(['mp3'], { type: 'audio/mpeg' }),
+        status: 200,
+        statusText: 'OK',
+      }),
+    );
 
     await completed;
 
