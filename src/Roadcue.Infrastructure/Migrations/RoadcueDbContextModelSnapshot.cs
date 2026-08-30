@@ -24,136 +24,62 @@ namespace Roadcue.Infrastructure.Migrations
 
             modelBuilder.Entity("Roadcue.Domain.Drivers.Driver", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CountryCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LanguageCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uniqueidentifier");
+                    b.Property<string>("CountryCode").IsRequired().HasColumnType("nvarchar(max)");
+                    b.Property<string>("LanguageCode").IsRequired().HasColumnType("nvarchar(max)");
+                    b.Property<string>("Name").IsRequired().HasColumnType("nvarchar(max)");
+                    b.Property<string>("Status").IsRequired().HasColumnType("nvarchar(max)");
                     b.HasKey("Id");
-
                     b.ToTable("Drivers", (string)null);
                 });
 
             modelBuilder.Entity("Roadcue.Domain.Drivers.DriverLocation", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DriverId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("Heading")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("RecordedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("SpeedKmh")
-                        .HasColumnType("float");
-
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uniqueidentifier");
+                    b.Property<double?>("AccuracyMeters").HasColumnType("float");
+                    b.Property<Guid>("DriverId").HasColumnType("uniqueidentifier");
+                    b.Property<double?>("Heading").HasColumnType("float");
+                    b.Property<double>("Latitude").HasColumnType("float");
+                    b.Property<double>("Longitude").HasColumnType("float");
+                    b.Property<DateTime>("RecordedAt").HasColumnType("datetime2");
+                    b.Property<double?>("SpeedKmh").HasColumnType("float");
                     b.HasKey("Id");
-
                     b.HasIndex("DriverId");
-
+                    b.HasIndex("DriverId", "RecordedAt");
                     b.ToTable("DriverLocations", (string)null);
                 });
 
             modelBuilder.Entity("Roadcue.Domain.Drivers.Friendship", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DriverId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FriendDriverId")
-                        .HasColumnType("uniqueidentifier");
-
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("DriverId").HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("FriendDriverId").HasColumnType("uniqueidentifier");
                     b.HasKey("Id");
-
                     b.ToTable("Friendships", (string)null);
                 });
 
             modelBuilder.Entity("Roadcue.Domain.Places.Place", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("HasFood")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasFuel")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uniqueidentifier");
+                    b.Property<bool>("HasFood").HasColumnType("bit");
+                    b.Property<bool>("HasFuel").HasColumnType("bit");
+                    b.Property<double>("Latitude").HasColumnType("float");
+                    b.Property<double>("Longitude").HasColumnType("float");
+                    b.Property<string>("Name").IsRequired().HasColumnType("nvarchar(max)");
+                    b.Property<string>("Type").IsRequired().HasColumnType("nvarchar(max)");
                     b.HasKey("Id");
-
                     b.ToTable("Places", (string)null);
                 });
 
             modelBuilder.Entity("Roadcue.Domain.Trips.Trip", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DriverId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("LastChangedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("StartedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)");
-
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("DriverId").HasColumnType("uniqueidentifier");
+                    b.Property<DateTime>("LastChangedAt").HasColumnType("datetime2");
+                    b.Property<DateTime>("StartedAt").HasColumnType("datetime2");
+                    b.Property<string>("Status").IsRequired().HasMaxLength(16).HasColumnType("nvarchar(16)");
                     b.HasKey("Id");
-
-                    b.HasIndex("DriverId", "Status")
-                        .IsUnique()
-                        .HasFilter("[Status] = 'Active'");
-
+                    b.HasIndex("DriverId", "Status").IsUnique().HasFilter("[Status] = 'Active'");
                     b.ToTable("Trips", (string)null);
                 });
 
@@ -164,7 +90,6 @@ namespace Roadcue.Infrastructure.Migrations
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
                     b.Navigation("Driver");
                 });
 
@@ -178,41 +103,18 @@ namespace Roadcue.Infrastructure.Migrations
 
                     b.OwnsOne("Roadcue.Domain.Trips.Destination", "Destination", b1 =>
                         {
-                            b1.Property<Guid>("TripId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Address")
-                                .HasMaxLength(512)
-                                .HasColumnType("nvarchar(512)");
-
-                            b1.Property<double>("Latitude")
-                                .HasColumnType("float");
-
-                            b1.Property<double>("Longitude")
-                                .HasColumnType("float");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
-
-                            b1.Property<string>("ProviderPlaceId")
-                                .HasMaxLength(128)
-                                .HasColumnType("nvarchar(128)");
-
-                            b1.Property<DateTime>("SetAt")
-                                .HasColumnType("datetime2");
-
+                            b1.Property<Guid>("TripId").HasColumnType("uniqueidentifier");
+                            b1.Property<string>("Address").HasMaxLength(512).HasColumnType("nvarchar(512)");
+                            b1.Property<double>("Latitude").HasColumnType("float");
+                            b1.Property<double>("Longitude").HasColumnType("float");
+                            b1.Property<string>("Name").IsRequired().HasMaxLength(256).HasColumnType("nvarchar(256)");
+                            b1.Property<string>("ProviderPlaceId").HasMaxLength(128).HasColumnType("nvarchar(128)");
+                            b1.Property<DateTime>("SetAt").HasColumnType("datetime2");
                             b1.HasKey("TripId");
-
                             b1.ToTable("Trips", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("TripId");
+                            b1.WithOwner().HasForeignKey("TripId");
                         });
-
                     b.Navigation("Destination");
-
                     b.Navigation("Driver");
                 });
 
