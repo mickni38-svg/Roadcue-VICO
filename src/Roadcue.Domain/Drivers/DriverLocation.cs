@@ -10,9 +10,11 @@ public class DriverLocation
 
     public double Longitude { get; set; }
 
-    public double SpeedKmh { get; set; }
+    public double? AccuracyMeters { get; set; }
 
-    public double Heading { get; set; }
+    public double? SpeedKmh { get; set; }
+
+    public double? Heading { get; set; }
 
     public DateTime RecordedAt { get; set; }
 
