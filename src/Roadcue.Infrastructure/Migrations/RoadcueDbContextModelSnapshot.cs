@@ -46,7 +46,7 @@ namespace Roadcue.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Drivers");
+                    b.ToTable("Drivers", (string)null);
                 });
 
             modelBuilder.Entity("Roadcue.Domain.Drivers.DriverLocation", b =>
@@ -77,7 +77,7 @@ namespace Roadcue.Infrastructure.Migrations
 
                     b.HasIndex("DriverId");
 
-                    b.ToTable("DriverLocations");
+                    b.ToTable("DriverLocations", (string)null);
                 });
 
             modelBuilder.Entity("Roadcue.Domain.Drivers.Friendship", b =>
@@ -94,7 +94,7 @@ namespace Roadcue.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Friendships");
+                    b.ToTable("Friendships", (string)null);
                 });
 
             modelBuilder.Entity("Roadcue.Domain.Places.Place", b =>
@@ -125,7 +125,7 @@ namespace Roadcue.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Places");
+                    b.ToTable("Places", (string)null);
                 });
 
             modelBuilder.Entity("Roadcue.Domain.Trips.Trip", b =>
@@ -154,7 +154,7 @@ namespace Roadcue.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[Status] = 'Active'");
 
-                    b.ToTable("Trips");
+                    b.ToTable("Trips", (string)null);
                 });
 
             modelBuilder.Entity("Roadcue.Domain.Drivers.DriverLocation", b =>
@@ -205,7 +205,7 @@ namespace Roadcue.Infrastructure.Migrations
 
                             b1.HasKey("TripId");
 
-                            b1.ToTable("Trips");
+                            b1.ToTable("Trips", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("TripId");

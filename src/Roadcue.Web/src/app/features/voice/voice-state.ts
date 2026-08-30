@@ -18,26 +18,20 @@ export const VOICE_EMOJI: Record<VoiceState, string> = {
 export const VOICE_LABEL: Record<VoiceState, string> = {
   idle: 'Tryk for at starte',
   'waiting-wake': "Sig 'VICO' for at tale til mig",
-  listening: "Jeg lytter – afslut med 'SKIFTER'",
+  listening: 'Jeg lytter – jeg svarer når du holder en kort pause',
   processing: 'Behandler',
   speaking: 'Taler',
   error: 'Fejl – tryk for at prøve igen',
 };
 
 export const WAKE_WORDS = ['VICO', 'VIGGO', 'VIGO'] as const;
-// Accept English-ish pronunciations of "skifter" ("skeefter") that the
-// da-DK recognizer commonly produces when the user says the end phrase
-// with an English accent.
-export const END_WORDS = [
-  'SKIFTER',
-  'SKEEFTER',
-  'SKEFTER',
-  'SKIFTA',
-  'SKIPTER',
-  'SKIPPER',
-] as const;
-/** @deprecated Use END_WORDS. Kept for backwards-compat imports. */
-export const END_WORD = 'SKIFTER';
+
+/**
+ * Hvor længe VICO venter uden ny tale før den automatisk sender det,
+ * chaufføren har sagt, til agenten. Erstatter det gamle "SKIFTER"-slutord –
+ * agenten afgør selv, om input er et spørgsmål eller en kommando.
+ */
+export const SILENCE_SUBMIT_MS = 2000;
 
 /**
  * How long the conversation stays "hot" after the last exchange before

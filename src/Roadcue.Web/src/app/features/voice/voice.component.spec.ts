@@ -77,6 +77,11 @@ describe('VoiceComponent (wake-word flow)', () => {
   let synthesis: FakeSynthesis;
   let httpMock: HttpTestingController;
 
+  const SILENCE_MS = 2000;
+
+  beforeEach(() => jasmine.clock().install());
+  afterEach(() => jasmine.clock().uninstall());
+
   function build(): VoiceComponent {
     recognition = new FakeRecognition();
     synthesis = new FakeSynthesis();
@@ -111,11 +116,12 @@ describe('VoiceComponent (wake-word flow)', () => {
     const cmp = build();
     await cmp.onTap();
     recognition.emit('bare noget snak uden aktivering', true);
+    jasmine.clock().tick(SILENCE_MS + 10);
     expect(cmp.state()).toBe('waiting-wake');
     httpMock.expectNone(AGENT_CHAT_ENDPOINT);
   });
 
-  it('captures message between wake word and SKIFTER, then processes', async () => {
+  it('captures message after wake word and submits after 2s of silence', async () => {
     const cmp = build();
     await cmp.onTap();
     let resolveSpeak!: () => void;
@@ -123,7 +129,10 @@ describe('VoiceComponent (wake-word flow)', () => {
       synthesis.spoken.push(text);
       return new Promise<void>((r) => (resolveSpeak = r));
     };
-    recognition.emit('Hej VICO vis mig chaufførerne SKIFTER', true);
+    recognition.emit('Hej VICO vis mig chaufførerne', true);
+    expect(cmp.state()).toBe('listening');
+    httpMock.expectNone(AGENT_CHAT_ENDPOINT);
+    jasmine.clock().tick(SILENCE_MS + 10);
     await flush();
     expect(cmp.state()).toBe('processing');
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
@@ -145,14 +154,16 @@ describe('VoiceComponent (wake-word flow)', () => {
   it('accepts VIGGO and VIGO as wake words', async () => {
     const cmp = build();
     await cmp.onTap();
-    recognition.emit('viggo hvad er klokken skifter', true);
+    recognition.emit('viggo hvad er klokken', true);
+    jasmine.clock().tick(SILENCE_MS + 10);
     await flush();
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
     expect(req.request.body.message).toBe('hvad er klokken');
     req.flush({ answer: 'ok', thread_id: 't' });
     await flush();
 
-    recognition.emit('vigo tak skifter', true);
+    recognition.emit('vigo tak', true);
+    jasmine.clock().tick(SILENCE_MS + 10);
     await flush();
     const req2 = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
     expect(req2.request.body.message).toBe('tak');
@@ -163,14 +174,16 @@ describe('VoiceComponent (wake-word flow)', () => {
   it('reuses thread_id on the follow-up utterance', async () => {
     const cmp = build();
     await cmp.onTap();
-    recognition.emit('vico første besked skifter', true);
+    recognition.emit('vico første besked', true);
+    jasmine.clock().tick(SILENCE_MS + 10);
     await flush();
     httpMock
       .expectOne(AGENT_CHAT_ENDPOINT)
       .flush({ answer: 'a', thread_id: 't-42' });
     await flush();
 
-    recognition.emit('vico anden besked skifter', true);
+    recognition.emit('vico anden besked', true);
+    jasmine.clock().tick(SILENCE_MS + 10);
     await flush();
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
     expect(req.request.body).toEqual({
@@ -181,15 +194,19 @@ describe('VoiceComponent (wake-word flow)', () => {
     await flush();
   });
 
-  it('does NOT send when final arrives without SKIFTER (iOS pauses become final)', async () => {
+  it('does NOT send early when finals arrive quickly (iOS pauses become final)', async () => {
     const cmp = build();
     await cmp.onTap();
-    // iOS Safari marks each pause as final; that must not end the capture.
-    recognition.emit('vico hvad er klokken', true);
+    // iOS Safari marks each pause as final; new speech before 2s must
+    // restart the silence timer instead of submitting immediately.
+    recognition.emit('vico hvad er', true);
     expect(cmp.state()).toBe('listening');
+    jasmine.clock().tick(1500);
     httpMock.expectNone(AGENT_CHAT_ENDPOINT);
-    // Only SKIFTER completes the utterance – arrives in a later final segment.
-    recognition.emit('skifter', true);
+    recognition.emit('klokken', true);
+    jasmine.clock().tick(1500);
+    httpMock.expectNone(AGENT_CHAT_ENDPOINT);
+    jasmine.clock().tick(SILENCE_MS + 10);
     await flush();
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
     expect(req.request.body.message).toBe('hvad er klokken');
@@ -197,14 +214,14 @@ describe('VoiceComponent (wake-word flow)', () => {
     await flush();
   });
 
-  it('accumulates message across separate final segments (SKIFTER in own segment)', async () => {
+  it('accumulates message across separate final segments until silence', async () => {
     const cmp = build();
     await cmp.onTap();
     recognition.emit('vico', true); // wake in its own final
     expect(cmp.state()).toBe('listening');
     recognition.emit('hvad er klokken', true); // body in its own final
     httpMock.expectNone(AGENT_CHAT_ENDPOINT);
-    recognition.emit('skifter', true); // end phrase in its own final
+    jasmine.clock().tick(SILENCE_MS + 10); // silence completes the utterance
     await flush();
     const req = httpMock.expectOne(AGENT_CHAT_ENDPOINT);
     expect(req.request.body.message).toBe('hvad er klokken');
@@ -220,7 +237,8 @@ describe('VoiceComponent (wake-word flow)', () => {
       synthesis.spoken.push(text);
       return new Promise<void>((r) => (resolveSpeak = r));
     };
-    recognition.emit('vico hej skifter', true);
+    recognition.emit('vico hej', true);
+    jasmine.clock().tick(SILENCE_MS + 10);
     await flush();
     httpMock
       .expectOne(AGENT_CHAT_ENDPOINT)
