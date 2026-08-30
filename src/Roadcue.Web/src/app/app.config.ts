@@ -1,6 +1,8 @@
 import {
   ApplicationConfig,
+  inject,
   provideBrowserGlobalErrorListeners,
+  provideEnvironmentInitializer,
   provideZoneChangeDetection,
   isDevMode,
 } from '@angular/core';
@@ -18,6 +20,11 @@ import {
   WebSpeechSynthesisAdapter,
 } from './features/voice/speech-synthesis.adapter';
 import { AzureSpeechSynthesisAdapter } from './features/voice/azure-speech-synthesis.adapter';
+import {
+  BrowserGeolocationAdapter,
+  GEOLOCATION_ADAPTER,
+} from './features/location/geolocation.adapter';
+import { LocationSyncService } from './features/location/location-sync.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,5 +46,12 @@ export const appConfig: ApplicationConfig = {
         new AzureSpeechSynthesisAdapter(http, new WebSpeechSynthesisAdapter()),
       deps: [HttpClient],
     },
+    {
+      provide: GEOLOCATION_ADAPTER,
+      useClass: BrowserGeolocationAdapter,
+    },
+    provideEnvironmentInitializer(() => {
+      inject(LocationSyncService).start();
+    }),
   ],
 };
