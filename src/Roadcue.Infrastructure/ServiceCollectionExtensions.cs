@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Roadcue.Application.Destinations;
+using Roadcue.Application.Locations;
 using Roadcue.Application.Speech;
 using Roadcue.Infrastructure.Geocoding;
 using Roadcue.Infrastructure.Persistence;
@@ -11,12 +12,6 @@ namespace Roadcue.Infrastructure;
 
 public static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Registrerer UC-36 destination-stakken: repository,
-    /// application-service og geocoder-adapter. Hvis
-    /// <c>Here:ApiKey</c> mangler, falder vi tilbage til den
-    /// deterministiske stub (dev/POC uden nøgle + tests).
-    /// </summary>
     public static IServiceCollection AddRoadcueDestinations(
         this IServiceCollection services,
         IConfiguration configuration )
@@ -50,15 +45,18 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    /// <summary>
-    /// Registrerer UC-40 speech-stakken: application-service og
-    /// TTS-adapter. Hvis <c>AzureSpeech:Key</c> eller
-    /// <c>AzureSpeech:Region</c> mangler, falder vi tilbage til
-    /// <see cref="StubSpeechSynthesizer"/>, som altid returnerer
-    /// <c>Failed("azure_key_missing")</c>. Det tillader appen at
-    /// starte uden nøgle, mens API'et svarer 502 og Angular kan
-    /// bruge browser-TTS-fallback.
-    /// </summary>
+    public static IServiceCollection AddRoadcueLocation(
+        this IServiceCollection services,
+        IConfiguration configuration )
+    {
+        services.AddSingleton( TimeProvider.System );
+        services.Configure<LocationOptions>(
+            configuration.GetSection( LocationOptions.SectionName ) );
+        services.AddScoped<IDriverLocationRepository, DriverLocationRepository>();
+        services.AddScoped<ILocationService, LocationService>();
+        return services;
+    }
+
     public static IServiceCollection AddRoadcueSpeech(
         this IServiceCollection services,
         IConfiguration configuration )
