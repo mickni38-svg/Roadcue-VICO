@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Roadcue.Api.Location;
+using Roadcue.Application.Locations;
 using Roadcue.Infrastructure;
 using Roadcue.Infrastructure.Persistence;
 using Scalar.AspNetCore;
@@ -15,7 +17,9 @@ builder.Services.AddDbContext<RoadcueDbContext>( options =>
 } );
 
 builder.Services.AddRoadcueDestinations( builder.Configuration );
+builder.Services.AddRoadcueLocation( builder.Configuration );
 builder.Services.AddRoadcueSpeech( builder.Configuration );
+builder.Services.AddScoped<ICurrentDriverContext, SimulatedCurrentDriverContext>();
 
 var app = builder.Build();
 
