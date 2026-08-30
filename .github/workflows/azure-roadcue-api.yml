@@ -85,15 +85,19 @@ jobs:
           test -n "$SQL_USER"
           test -n "$SQLCMDPASSWORD"
 
+          # Microsoft publishes mssql-tools18 inside supported SQL Server images.
+          # Override the image entrypoint so this container only runs sqlcmd;
+          # it does not start a SQL Server instance in the GitHub runner.
           docker run --rm \
+            --entrypoint /opt/mssql-tools18/bin/sqlcmd \
             -e SQLCMDPASSWORD \
             -v "$PWD/artifacts:/work:ro" \
-            mcr.microsoft.com/mssql-tools18 \
-            /opt/mssql-tools18/bin/sqlcmd \
+            mcr.microsoft.com/mssql/server:2022-latest \
             -S "$SQL_SERVER" \
             -d "$SQL_DATABASE" \
             -U "$SQL_USER" \
             -N \
+            -C \
             -b \
             -i /work/roadcue-migrations.sql
 
