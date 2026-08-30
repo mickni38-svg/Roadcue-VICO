@@ -18,7 +18,7 @@ export const VOICE_EMOJI: Record<VoiceState, string> = {
 export const VOICE_LABEL: Record<VoiceState, string> = {
   idle: 'Tryk for at starte',
   'waiting-wake': "Sig 'VICO' for at tale til mig",
-  listening: 'Jeg lytter – jeg svarer når du holder en kort pause',
+  listening: "Jeg lytter – afslut med 'SKIFTER'",
   processing: 'Behandler',
   speaking: 'Taler',
   error: 'Fejl – tryk for at prøve igen',
@@ -27,11 +27,11 @@ export const VOICE_LABEL: Record<VoiceState, string> = {
 export const WAKE_WORDS = ['VICO', 'VIGGO', 'VIGO'] as const;
 
 /**
- * Hvor længe VICO venter uden ny tale før den automatisk sender det,
- * chaufføren har sagt, til agenten. Erstatter det gamle "SKIFTER"-slutord –
- * agenten afgør selv, om input er et spørgsmål eller en kommando.
+ * Explicit end word for a driver utterance. Requiring an end word prevents
+ * background speech and incidental recognition results from being submitted
+ * to the agent merely because the cabin becomes quiet.
  */
-export const SILENCE_SUBMIT_MS = 2000;
+export const END_WORDS = ['SKIFTER'] as const;
 
 /**
  * How long the conversation stays "hot" after the last exchange before
