@@ -34,12 +34,47 @@ Voice input/output is added around the Angular/VICO text interaction after the t
 
 - `app/graphs/vico_agent.py`: top-level VICO orchestration.
 - `app/core/prompts/vico_system_prompt.py`: general VICO identity, conversation and safety behavior.
+- `app/core/prompts/` may contain a prompt-composition helper when selective composition is implemented.
 - `app/domains/<domain>/instructions.py`: domain-specific agent instructions.
 - `app/domains/<domain>/tools.py` or equivalent: approved LangChain tools for the domain.
 - `app/clients/`: HTTP clients for approved C# APIs and other owned service boundaries.
 - `app/models/`: shared request/response and agent-state models, not business-domain duplicates.
 
 Initial domains include conversation and Friends. Planned domains include context, places, messages, community, traffic, voice and proactivity. A domain is a modular area inside VICO, not automatically a separate deployable service.
+
+## Prompt composition strategy
+
+The general VICO prompt is always part of a model call. Domain instructions are modular and must not grow into one permanently concatenated global prompt as more capabilities are added.
+
+During the current small POC it is acceptable to compose the global prompt together with all implemented domain instructions. This keeps the implementation simple while only a few domains exist.
+
+The target architecture is selective prompt composition:
+
+1. The current message and conversation context are inspected by the VICO orchestration layer.
+2. Relevant domain capabilities are selected from a deterministic registry and/or the tool-routing context.
+3. The model receives the general VICO prompt plus only the domain instructions needed for the current turn.
+4. General conversation that requires no Roadcue capability receives only the general VICO prompt.
+5. Multi-domain questions may include more than one domain instruction set when the turn genuinely requires them.
+
+Example:
+
+```text
+"Fortæl en vittighed"
+  -> VICO_SYSTEM_PROMPT
+
+"Hvem er mine venner?"
+  -> VICO_SYSTEM_PROMPT + FRIENDS_INSTRUCTIONS
+
+"Jeg skal til Hamburg"
+  -> VICO_SYSTEM_PROMPT + DESTINATION_INSTRUCTIONS
+
+"Er en af mine venner tæt på min destination?"
+  -> VICO_SYSTEM_PROMPT + FRIENDS_INSTRUCTIONS + DESTINATION_INSTRUCTIONS
+```
+
+Selective composition is an optimization and maintainability rule, not a separate business authority. The router may choose which instructions and tools are relevant, but C# remains authoritative for Roadcue data and operations.
+
+See `09-PROMPT-COMPOSITION-AND-ROUTING.md` for the detailed rules and migration direction.
 
 ## System boundaries
 
@@ -58,6 +93,7 @@ Initial domains include conversation and Friends. Planned domains include contex
 - natural-language understanding and response generation;
 - deciding whether a question needs a tool;
 - selecting and sequencing approved tools;
+- selecting relevant prompt modules for the current turn;
 - combining tool results into one conversational response;
 - conversation context and LangGraph orchestration;
 - later pausing and resuming community workflows.
