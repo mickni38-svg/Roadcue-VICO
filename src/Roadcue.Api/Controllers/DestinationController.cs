@@ -46,7 +46,7 @@ public class DestinationController : ControllerBase
         };
     }
 
-    private async Task<IActionResult?> GuardCurrentDriver(Guid driverId, CancellationToken cancellationToken)
+    private async Task<ActionResult?> GuardCurrentDriver(Guid driverId, CancellationToken cancellationToken)
     {
         var current = await _currentDriver.GetCurrentDriverIdAsync(cancellationToken);
         if (!current.HasValue) return Unauthorized(new { error = "current_driver_not_configured" });
