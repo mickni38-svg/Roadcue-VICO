@@ -21,8 +21,8 @@ import {
   VOICE_LABEL,
   VoiceState,
   WAKE_WORDS,
+  END_WORDS,
   CONVERSATION_IDLE_MS,
-  SILENCE_SUBMIT_MS,
   WAKE_ACK,
 } from './voice-state';
 
@@ -55,12 +55,8 @@ export class VoiceComponent implements OnDestroy {
   private capturing = false;
   private finalizedText = '';
   private interimText = '';
-  private busy = false; // true while sending to backend or speaking
+  private busy = false;
   private conversationTimer: ReturnType<typeof setTimeout> | null = null;
-  private silenceTimer: ReturnType<typeof setTimeout> | null = null;
-  // Guard so "Ja" is spoken at most once per buffer cycle. Otherwise
-  // every interim result that still contains the wake word would
-  // re-trigger the ack, which sounds like "Ja, Ja, Ja...".
   private ackedForCurrentBuffer = false;
 
   async onTap(): Promise<void> {
@@ -73,13 +69,11 @@ export class VoiceComponent implements OnDestroy {
     }
 
     if (this.session) {
-      // Already listening – tap stops everything and returns to idle.
       this.stopSession();
       this.state.set('idle');
       return;
     }
 
-    // First tap: prime TTS (needed for iOS) and start continuous recognition.
     this.errorMessage.set('');
     this.synthesis.prime();
     this.startSession();
@@ -88,7 +82,6 @@ export class VoiceComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.stopSession();
     this.clearConversationTimer();
-    this.clearSilenceTimer();
   }
 
   private startSession(): void {
@@ -109,7 +102,6 @@ export class VoiceComponent implements OnDestroy {
     this.session?.stop();
     this.session = null;
     this.clearConversationTimer();
-    this.clearSilenceTimer();
     this.resetBuffers();
   }
 
@@ -126,8 +118,6 @@ export class VoiceComponent implements OnDestroy {
       this.conversationTimer = null;
       this.capturing = false;
       this.resetBuffers();
-      // Only fall back to waiting-wake if we're still in an idle
-      // conversational state (avoid overriding an active exchange).
       if (!this.busy && this.state() === 'listening') {
         this.state.set('waiting-wake');
       }
@@ -142,55 +132,25 @@ export class VoiceComponent implements OnDestroy {
   }
 
   /**
-   * (Re)starts a short "silence" timer. When it fires without any new
-   * transcript, the accumulated body (everything after the wake word)
-   * is submitted to the agent, which itself decides whether the input
-   * is a question or a command (UC-03). This replaces the old requirement
-   * to end each utterance with the word "SKIFTER".
-   */
-  private armSilenceTimer(body: string): void {
-    this.clearSilenceTimer();
-    this.silenceTimer = setTimeout(() => {
-      this.silenceTimer = null;
-      this.resetBuffers(true);
-      const trimmed = body.trim();
-      if (!trimmed) {
-        this.state.set('listening');
-        this.armConversationTimer();
-        return;
-      }
-      void this.processMessage(trimmed);
-    }, SILENCE_SUBMIT_MS);
-  }
-
-  private clearSilenceTimer(): void {
-    if (this.silenceTimer !== null) {
-      clearTimeout(this.silenceTimer);
-      this.silenceTimer = null;
-    }
-  }
-
-  /**
    * Fire-and-forget short acknowledgement ("Ja") when VICO hears its
-   * wake word. Does not toggle {@link busy} so the user can start
-   * talking immediately after the ack.
+   * wake word. Does not toggle busy so the user can start talking
+   * immediately after the acknowledgement.
    */
   private acknowledgeWake(): void {
     try {
       void this.synthesis.speak(WAKE_ACK).catch(() => {
-        /* ignore – best-effort ack */
+        /* best-effort acknowledgement */
       });
     } catch {
-      /* ignore */
+      /* best-effort acknowledgement */
     }
   }
 
   private handleTranscript(transcript: string, isFinal: boolean): void {
     if (this.busy) return;
 
-    // Web Speech on iOS Safari emits each pause as a separate final segment.
-    // Accumulate all finals since the wake word and keep the latest interim
-    // as a tentative tail; a 2s silence timer decides when to submit.
+    // iOS/Safari may split one utterance into several final segments.
+    // Keep accumulating them until the explicit end word SKIFTER is heard.
     if (isFinal) {
       this.finalizedText = (this.finalizedText + ' ' + transcript).trim();
       this.interimText = '';
@@ -211,28 +171,39 @@ export class VoiceComponent implements OnDestroy {
         this.ackedForCurrentBuffer = true;
         this.acknowledgeWake();
       }
-      this.clearConversationTimer();
     } else if (
       wake !== -1 &&
       upper.slice(0, wake.before).trim() === '' &&
       !this.ackedForCurrentBuffer
     ) {
-      // Already in conversation mode; user re-invoked "VICO" as a lone
-      // attention word. Acknowledge once for this buffer cycle.
       this.ackedForCurrentBuffer = true;
       this.acknowledgeWake();
     }
 
-    // Isolate the body that follows the wake word (if any). In
-    // conversation mode the buffer may not contain a wake word at all,
-    // in which case the whole buffer is the body.
+    this.clearConversationTimer();
+
+    // In an active conversation a new utterance does not need to repeat VICO.
+    // If a wake word is present, only the text after it belongs to the message.
     const wakeAfter = wake !== -1 ? wake.after : 0;
     const body = full.slice(wakeAfter).trim();
+    const bodyUpper = body.toUpperCase();
+    const end = findFirstWordIndex(bodyUpper, END_WORDS);
 
-    // Every new transcript (interim or final) restarts the silence timer.
-    // When the driver stops speaking for ~2s, the accumulated body is
-    // sent to the agent automatically – no end-word required.
-    this.armSilenceTimer(body);
+    // Never submit on silence alone. A final recognition result containing
+    // SKIFTER is required, which prevents incidental cabin speech from being
+    // turned into an agent request.
+    if (!isFinal || end === -1) return;
+
+    const message = body.slice(0, end.before).trim();
+    this.resetBuffers(true);
+
+    if (!message) {
+      this.state.set('listening');
+      this.armConversationTimer();
+      return;
+    }
+
+    void this.processMessage(message);
   }
 
   private async processMessage(message: string): Promise<void> {
@@ -266,8 +237,9 @@ export class VoiceComponent implements OnDestroy {
     } catch {
       // Keep the answer in the UI, but return to listening state.
     }
-    // Stay hot: the user can continue without repeating "VICO" until
-    // the idle timer expires.
+
+    // Keep the conversation hot so follow-up messages can omit VICO, but every
+    // utterance still has to end with SKIFTER before it is sent to the agent.
     this.capturing = true;
     this.state.set('listening');
     this.armConversationTimer();
@@ -302,4 +274,3 @@ function findFirstWordIndex(
   }
   return best;
 }
-
