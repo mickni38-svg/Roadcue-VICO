@@ -11,6 +11,7 @@ Denne mappe indeholder use cases, som har en tilhørende implementeringstask med
 - UC-26 – Betjen VICO med stemmen
 - UC-34 – Deploy Roadcue til Azure
 - UC-36 – Sæt aktiv destination
+- UC-37 – Registrer chaufførens aktuelle GPS-position
 - UC-40 – Oplæs VICO-svar med Azure Speech
 
 ## Regel
