@@ -1,8 +1,8 @@
 # Task: Registrer chaufførens aktuelle GPS-position (UC-37)
 
 **Dato:** 2026-08-30  
-**Status:** In Progress  
-**Use case:** [../features/UC-37-REGISTRER-AKTUEL-GPS-POSITION.md](../features/UC-37-REGISTRER-AKTUEL-GPS-POSITION.md)  
+**Status:** Done  
+**Use case:** [../features/done/UC-37-REGISTRER-AKTUEL-GPS-POSITION.md](../features/done/UC-37-REGISTRER-AKTUEL-GPS-POSITION.md)  
 **Type:** Feature
 
 ## Resultat
@@ -29,33 +29,6 @@ Roadcue Web henter GPS via browserens W3C Geolocation API og sender samples til 
 - Google Maps/Directions eller betalt GPS SDK.
 - Nyt VICO-tool.
 
-## Verificeret udgangspunkt
-
-- `DriverLocation` og `DbSet<DriverLocation>` fandtes allerede.
-- Speed/heading var NOT NULL og accuracy manglede.
-- Angular havde ingen location-feature.
-- Browser-API'er skal ligge bag adaptere, og C# ejer SQL/validering.
-
-## Påvirkning
-
-| Område | Ændring |
-|---|---|
-| Angular | Geolocation-adapter, sync-service, app composition og tests |
-| C# | Location service/repository/context/controller |
-| Python/VICO | Ingen |
-| SQL | Accuracy nullable + speed/heading nullable + index på DriverId/RecordedAt |
-| Config | Location thresholds + serverstyret simulated driver id |
-| CI | Application tests køres i API workflow |
-
-## Implementeringsplan
-
-1. Udvid domænemodel og migration.
-2. Tilføj Location application-kontrakter og deterministiske regler.
-3. Implementér repository og current-driver-context.
-4. Tilføj API-endpoints.
-5. Tilføj Angular Geolocation-adapter og sync-service.
-6. Tilføj tests og valider CI/migration.
-
 ## Implementeringsspecifikke acceptkriterier
 
 - [x] POST-kontrakten indeholder intet `driverId`; identitet kommer fra `ICurrentDriverContext`.
@@ -72,10 +45,11 @@ Roadcue Web henter GPS via browserens W3C Geolocation API og sender samples til 
 ## Valideringsplan
 
 - [x] Angular unit tests og build er grønne i GitHub Actions.
-- [x] API build og idempotent EF migration generation er grøn i GitHub Actions.
-- [ ] Nye xUnit LocationService-tests er kørt i den opdaterede workflow.
-- [ ] API workflow med den nye test-step er fuldt grønt.
-- [ ] Production migration/deploy er fuldført.
+- [x] .NET application tests er grønne i GitHub Actions.
+- [x] API build er grøn.
+- [x] Idempotent EF migration script genereres grønt.
+- [x] Migration er kørt mod Simply.com SQL Server.
+- [x] API container er bygget, pushed og deployet til Azure Container Apps.
 
 ## Risici og åbne spørgsmål
 
@@ -85,11 +59,12 @@ Roadcue Web henter GPS via browserens W3C Geolocation API og sender samples til 
 ## Implementeringslog
 
 - Ændrede filer: `Roadcue.Application/Locations/*`, `DriverLocation`, `DriverLocationRepository`, `LocationController`, `SimulatedCurrentDriverContext`, `RoadcueDbContext`, EF migration/snapshot, Angular `features/location/*`, `app.config.ts`, `proxy.conf.json`, `appsettings.json`, API workflow og tests.
-- Vigtige beslutninger: GPS-identitet kan ikke komme fra request/prompt; POC bruger serverkonfigureret driver-GUID. Freshness og route-egnethed beregnes i C#.
-- Afvigelser fra planen: Ingen VICO/Python-ændringer. Production-routing for Static Web Apps ændres ikke, fordi den ikke er dokumenteret i repoet som en filbaseret proxy; kun den eksisterende lokale Angular proxy er udvidet.
+- Vigtige beslutninger: GPS-identitet kommer aldrig fra request/prompt; POC bruger serverkonfigureret driver-GUID. Freshness og route-egnethed beregnes i C#.
+- Afvigelser fra planen: Ingen VICO/Python-ændringer. Production-routing for Static Web Apps blev ikke ændret, fordi repoet ikke dokumenterer en filbaseret backend-proxy; kun eksisterende lokal Angular proxy blev udvidet.
 
 ## Resultat af validering
 
-- Automatiske tests: Angular workflow har gennemført `npm test` og `npm run build` grønt. API workflow har gennemført restore/build og EF idempotent script-generation grønt; nyt workflow med xUnit-step afventes.
-- Manuel kontrol: Ikke udført med real GPS; use casen kræver ikke real device GPS til automatiske tests.
-- Resterende begrænsninger: Server-side simulated driver-id skal konfigureres i deployment-miljøet før endpointet accepterer positionssamples.
+- Automatiske tests: Angular `npm test` + build grøn. .NET application tests grøn. EF script-generation grøn.
+- Deployment: Simply.com migration grøn; Azure API deploy grøn; Angular deploy grøn.
+- Manuel kontrol: Ikke udført med real GPS; automatiske tests bruger simulerede samples som krævet.
+- Resterende begrænsninger: `SimulatedCurrentDriver__DriverId` skal konfigureres server-side, ellers returnerer location-endpointet 401 og gemmer ingen position.
