@@ -27,6 +27,18 @@ public class RoadcueDbContext : DbContext
     {
         base.OnModelCreating( modelBuilder );
 
+        modelBuilder.Entity<DriverLocation>( location =>
+        {
+            location.HasKey( x => x.Id );
+            location.Property( x => x.Latitude ).IsRequired();
+            location.Property( x => x.Longitude ).IsRequired();
+            location.Property( x => x.RecordedAt ).IsRequired();
+            location.Property( x => x.AccuracyMeters ).IsRequired( false );
+            location.Property( x => x.SpeedKmh ).IsRequired( false );
+            location.Property( x => x.Heading ).IsRequired( false );
+            location.HasIndex( x => new { x.DriverId, x.RecordedAt } );
+        } );
+
         modelBuilder.Entity<Trip>( trip =>
         {
             trip.HasKey( t => t.Id );
@@ -39,7 +51,6 @@ public class RoadcueDbContext : DbContext
             trip.Property( t => t.StartedAt ).IsRequired();
             trip.Property( t => t.LastChangedAt ).IsRequired();
 
-            // Ejet type: destinationen lever kun sammen med sin Trip.
             trip.OwnsOne( t => t.Destination, dest =>
             {
                 dest.Property( d => d.Name ).HasMaxLength( 256 ).IsRequired();
@@ -50,8 +61,6 @@ public class RoadcueDbContext : DbContext
                 dest.Property( d => d.SetAt ).IsRequired();
             } );
 
-            // Højst én aktiv Trip pr. driver – håndhæves som filtered
-            // unique index på DriverId når Status = 'Active'.
             trip.HasIndex( t => new { t.DriverId, t.Status } )
                 .HasFilter( "[Status] = 'Active'" )
                 .IsUnique();
