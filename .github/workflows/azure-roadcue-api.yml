@@ -38,6 +38,22 @@ jobs:
           dotnet-version: "10.0.x"
       - run: dotnet restore src/Roadcue.Api/Roadcue.Api.csproj
       - run: dotnet build src/Roadcue.Api/Roadcue.Api.csproj --configuration Release --no-restore
+      - name: Install EF Core CLI
+        run: dotnet tool install --global dotnet-ef --version 10.0.11
+      - name: Generate idempotent migration script
+        run: |
+          mkdir -p artifacts
+          dotnet ef migrations script \
+            --idempotent \
+            --project src/Roadcue.Infrastructure \
+            --startup-project src/Roadcue.Api \
+            --output artifacts/roadcue-migrations.sql
+      - name: Upload migration script
+        uses: actions/upload-artifact@v4
+        with:
+          name: roadcue-migrations-${{ github.sha }}
+          path: artifacts/roadcue-migrations.sql
+          retention-days: 30
       - name: Build API container
         run: docker build --file src/Roadcue.Api/Dockerfile --tag roadcue-api:${IMAGE_TAG} .
       - name: Verify API image contract
@@ -45,9 +61,45 @@ jobs:
           test -n "$(docker inspect --format '{{.Config.User}}' roadcue-api:${IMAGE_TAG})"
           docker inspect roadcue-api:${IMAGE_TAG} | grep -q '8080/tcp'
 
-  deploy:
+  migrate-production:
     if: github.event_name != 'pull_request'
     needs: build-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: azure-production
+    steps:
+      - name: Download migration script
+        uses: actions/download-artifact@v4
+        with:
+          name: roadcue-migrations-${{ github.sha }}
+          path: artifacts
+      - name: Apply migrations to Simply SQL Server
+        env:
+          SQL_SERVER: ${{ secrets.SIMPLY_SQL_SERVER }}
+          SQL_DATABASE: ${{ secrets.SIMPLY_SQL_DATABASE }}
+          SQL_USER: ${{ secrets.SIMPLY_SQL_USER }}
+          SQLCMDPASSWORD: ${{ secrets.SIMPLY_SQL_PASSWORD }}
+        run: |
+          test -n "$SQL_SERVER"
+          test -n "$SQL_DATABASE"
+          test -n "$SQL_USER"
+          test -n "$SQLCMDPASSWORD"
+
+          docker run --rm \
+            -e SQLCMDPASSWORD \
+            -v "$PWD/artifacts:/work:ro" \
+            mcr.microsoft.com/mssql-tools18 \
+            /opt/mssql-tools18/bin/sqlcmd \
+            -S "$SQL_SERVER" \
+            -d "$SQL_DATABASE" \
+            -U "$SQL_USER" \
+            -N \
+            -b \
+            -i /work/roadcue-migrations.sql
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: migrate-production
     runs-on: ubuntu-latest
     environment: azure-production
     steps:
