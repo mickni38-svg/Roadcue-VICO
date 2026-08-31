@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
+import { roadcueApiUrl } from '../../core/roadcue-api';
 import { GEOLOCATION_ADAPTER, GeolocationFailure } from './geolocation.adapter';
 
-export const LOCATION_ENDPOINT = '/api/location/current';
+export const LOCATION_ENDPOINT = roadcueApiUrl('/api/location/current');
 
 export interface LocationPayload {
   latitude: number;
