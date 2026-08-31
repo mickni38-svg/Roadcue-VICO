@@ -6,6 +6,22 @@ using Roadcue.Infrastructure.Persistence;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("RoadcueWeb", policy =>
+    {
+        policy
+            .WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<RoadcueDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Roadcue")));
@@ -22,6 +38,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
+app.UseCors("RoadcueWeb");
 app.MapControllers();
 app.MapGet("/", () => Results.Ok(new { service = "Roadcue.Api", status = "running" }));
 app.MapGet("/health", () => Results.Ok("healthy"));
