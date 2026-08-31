@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { roadcueApiUrl } from '../../core/roadcue-api';
 import { SpeechSynthesisAdapter } from './speech-synthesis.adapter';
 
-export const AZURE_TTS_ENDPOINT = '/api/speech/tts';
+export const AZURE_TTS_ENDPOINT = roadcueApiUrl('/api/speech/tts');
 
 const SILENT_AUDIO_DATA_URL =
   'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=';
