@@ -52,6 +52,7 @@ export class VoiceComponent implements OnDestroy {
   );
 
   private session: ContinuousRecognitionSession | null = null;
+  private recognitionGeneration = 0;
   private capturing = false;
   private finalizedText = '';
   private interimText = '';
@@ -63,8 +64,9 @@ export class VoiceComponent implements OnDestroy {
     const current = this.state();
 
     if (current === 'speaking') {
+      // processMessage() resumes recognition after the cancelled speech has
+      // actually settled. Do not start a second recognizer here.
       this.synthesis.cancel();
-      this.state.set('waiting-wake');
       return;
     }
 
@@ -76,7 +78,10 @@ export class VoiceComponent implements OnDestroy {
 
     this.errorMessage.set('');
     this.synthesis.prime();
-    this.startSession();
+    this.capturing = false;
+    this.resetBuffers();
+    this.state.set('waiting-wake');
+    this.startRecognition();
   }
 
   ngOnDestroy(): void {
@@ -84,13 +89,15 @@ export class VoiceComponent implements OnDestroy {
     this.clearConversationTimer();
   }
 
-  private startSession(): void {
-    this.resetBuffers();
-    this.state.set('waiting-wake');
+  private startRecognition(): void {
+    const generation = ++this.recognitionGeneration;
     this.session = this.recognition.listen({
-      onTranscript: (transcript, isFinal) =>
-        this.handleTranscript(transcript, isFinal),
+      onTranscript: (transcript, isFinal) => {
+        if (generation !== this.recognitionGeneration) return;
+        this.handleTranscript(transcript, isFinal);
+      },
       onError: (err) => {
+        if (generation !== this.recognitionGeneration) return;
         this.errorMessage.set(`Mikrofonfejl: ${err}`);
         this.state.set('error');
         this.stopSession();
@@ -98,9 +105,16 @@ export class VoiceComponent implements OnDestroy {
     });
   }
 
-  private stopSession(): void {
+  private stopRecognition(): void {
+    // Invalidate callbacks from the old browser recognizer before stopping it.
+    // Web Speech may still deliver a queued final result after stop().
+    this.recognitionGeneration++;
     this.session?.stop();
     this.session = null;
+  }
+
+  private stopSession(): void {
+    this.stopRecognition();
     this.clearConversationTimer();
     this.resetBuffers();
   }
@@ -133,8 +147,8 @@ export class VoiceComponent implements OnDestroy {
 
   /**
    * Fire-and-forget short acknowledgement ("Ja") when VICO hears its
-   * wake word. Does not toggle busy so the user can start talking
-   * immediately after the acknowledgement.
+   * wake word. Recognition intentionally stays active for this very short
+   * acknowledgement so the driver can continue speaking immediately.
    */
   private acknowledgeWake(): void {
     try {
@@ -149,8 +163,6 @@ export class VoiceComponent implements OnDestroy {
   private handleTranscript(transcript: string, isFinal: boolean): void {
     if (this.busy) return;
 
-    // iOS/Safari may split one utterance into several final segments.
-    // Keep accumulating them until the explicit end word SKIFTER is heard.
     if (isFinal) {
       this.finalizedText = (this.finalizedText + ' ' + transcript).trim();
       this.interimText = '';
@@ -182,16 +194,11 @@ export class VoiceComponent implements OnDestroy {
 
     this.clearConversationTimer();
 
-    // In an active conversation a new utterance does not need to repeat VICO.
-    // If a wake word is present, only the text after it belongs to the message.
     const wakeAfter = wake !== -1 ? wake.after : 0;
     const body = full.slice(wakeAfter).trim();
     const bodyUpper = body.toUpperCase();
     const end = findFirstWordIndex(bodyUpper, END_WORDS);
 
-    // Never submit on silence alone. A final recognition result containing
-    // SKIFTER is required, which prevents incidental cabin speech from being
-    // turned into an agent request.
     if (!isFinal || end === -1) return;
 
     const message = body.slice(0, end.before).trim();
@@ -231,19 +238,30 @@ export class VoiceComponent implements OnDestroy {
       return;
     }
 
+    // VICO must not listen to its own loudspeaker output. Stop recognition
+    // before TTS starts and invalidate callbacks from the old recognizer.
+    // This prevents a tail such as "og Thomas" from becoming the beginning
+    // of the driver's next hot follow-up.
+    this.clearConversationTimer();
+    this.stopRecognition();
+    this.resetBuffers(true);
     this.state.set('speaking');
+
     try {
       await this.synthesis.speak(answer);
     } catch {
-      // Keep the answer in the UI, but return to listening state.
+      // Keep the answer in the UI. Listening is resumed below.
     }
 
-    // Keep the conversation hot so follow-up messages can omit VICO, but every
-    // utterance still has to end with SKIFTER before it is sent to the agent.
+    // Start a fresh recognition session only after playback has completely
+    // settled. The conversation stays hot, so the next question does not need
+    // the VICO wake word, but it still has to end with SKIFTER.
+    this.resetBuffers(true);
     this.capturing = true;
-    this.state.set('listening');
-    this.armConversationTimer();
     this.busy = false;
+    this.state.set('listening');
+    this.startRecognition();
+    this.armConversationTimer();
   }
 
   private describe(err: unknown, fallback: string): string {
@@ -254,12 +272,6 @@ export class VoiceComponent implements OnDestroy {
   }
 }
 
-/**
- * Finds the first occurrence of any word in `words` inside `haystack`
- * (already uppercased). Returns the character indexes immediately before and
- * after the match, or -1 if not found. Uses word boundaries so 'VICOSA' does
- * not trigger 'VICO'.
- */
 function findFirstWordIndex(
   haystack: string,
   words: readonly string[],
