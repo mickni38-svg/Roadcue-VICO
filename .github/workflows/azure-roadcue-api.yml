@@ -127,10 +127,20 @@ jobs:
           ACR_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
           RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
           CONTAINER_APP: ${{ vars.AZURE_ROADCUE_API_APP_NAME }}
-        run: >-
-          az containerapp update
-          --name "$CONTAINER_APP"
-          --resource-group "$RESOURCE_GROUP"
-          --image "$ACR_NAME.azurecr.io/roadcue-api:$IMAGE_TAG"
-          --min-replicas 1
-          --max-replicas 10
+        run: |
+          az containerapp update \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --image "$ACR_NAME.azurecr.io/roadcue-api:$IMAGE_TAG" \
+            --min-replicas 1 \
+            --max-replicas 10
+
+          # Angular calls Roadcue.Api directly in production, so the API must
+          # have an external HTTPS ingress. VICO can still use internal service
+          # discovery against the same Container App.
+          az containerapp ingress enable \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --type external \
+            --target-port 8080 \
+            --transport auto
